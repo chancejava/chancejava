@@ -17,7 +17,7 @@ public class ChanceBoolTest {
 
     @Test
     public void boolWithOptionsTrueTest() {
-        Boolean expected = chance.bool(chanceOptions().option("likelihood", 100));
+        Boolean expected = chance.bool(chance.options().option("likelihood", 100));
         Boolean actual = true;
        assertEquals(expected, actual); 
     }
@@ -31,7 +31,7 @@ public class ChanceBoolTest {
 
     @Test
     public void boolWithOptionsFalseTest() {
-        Boolean expected = chance.bool(chanceOptions().option("likelihood", 0));
+        Boolean expected = chance.bool(chance.options().option("likelihood", 0));
         Boolean actual = false;
        assertEquals(expected, actual); 
     }
@@ -46,7 +46,7 @@ public class ChanceBoolTest {
     @Test
     public void testCharacter() {
         String expected = "a";
-        String actual = chance.character(chanceOptions().option("pool", "a"));
+        String actual = chance.character(chance.options().option("pool", "a"));
         assertEquals(expected, actual); 
 
     }

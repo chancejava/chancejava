@@ -31,7 +31,9 @@ public class Chance {
         this.random = random; 
     }
   
-
+    public Option options() {
+        return new Option();
+    }
     // -- Basics --
 
     /**
