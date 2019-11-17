@@ -4,9 +4,8 @@ package org.chance;
 import org.apache.commons.math3.random.MersenneTwister;
 import org.chance.utils.TestingUtils;
 
-import static org.chance.Option.chanceOptions;
 
-import java.util.stream.Stream;
+import java.math.BigDecimal;
 
 public class Chance {
 
@@ -229,5 +228,71 @@ public class Chance {
         return integer(this.options().option("min", MIN_INT).option("max", MAX_INT));
     }
 
+    // Note, fixed means N OR LESS digits after the decimal. This because
+    // It could be 14.9000 but in JavaScript, when this is cast as a number,
+    // the trailing zeroes are dropped. Left to the consumer if trailing zeroes are
+    // needed
+    /**
+     *  Return a random floating point number
+     * <pre>
+     * {@code  
+     * chance.floating(chance.options()
+     *   .option("precision", 3)
+     *   .option("min", 1)
+     *   .option("max", 3)
+     * );
+     * }
+     * </pre>     
+     *  @param options can specify a fixed precision, min, max
+     *  @returns {Number} a single floating point number
+     *  @throws RangeError Can only specify fixed or precision, not both. Also
+     *    min cannot be greater than max
+     */
+    public Double floating(Option options) {
 
+        Integer min;
+        Integer max;
+        Integer precision;
+
+        try {
+            precision = (Integer)options.getOrDefault("precision", 15);
+        } catch (ClassCastException e) {
+            throw new IllegalArgumentException("Chance: Precision must be an integer");
+        }
+        
+        try {
+            min = (Integer)options.getOrDefault("min", MIN_INT);
+        } catch (ClassCastException e) {
+            throw new IllegalArgumentException("Chance: Min must be an integer");
+        }
+
+        try {
+            max = (Integer)options.getOrDefault("max", MAX_INT);
+        } catch (ClassCastException e) {
+            throw new IllegalArgumentException("Chance: Max must be an integer");
+        }
+
+        Integer num;
+        Double fixed = Math.pow(10, precision);
+
+        Double allowedMax = MAX_INT / fixed;
+        Double allowedMin = -allowedMax;
+
+        TestingUtils.test(
+             min < allowedMin,
+            "Chance: Min specified is out of range with fixed. Min should be, at least, " + min
+        );
+        
+        TestingUtils.test(
+            min != null && precision != null && max > allowedMax,
+            "Chance: Max specified is out of range with fixed. Max should be, at most, " + max
+        );
+
+        Option integerOptions = this.options()
+            .option("min", (int)(min * fixed))
+            .option("max", (int)(max * fixed));
+
+        num = this.integer(integerOptions);
+        return new BigDecimal(num / fixed).setScale(precision).doubleValue();
+    }
 }
