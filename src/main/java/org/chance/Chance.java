@@ -1,7 +1,7 @@
 package org.chance;
 
-import java.util.Random;
 
+import org.apache.commons.math3.random.MersenneTwister;
 import org.chance.utils.TestRange;
 
 import static org.chance.Option.chanceOptions;
@@ -15,22 +15,27 @@ public class Chance {
     String CHARS_UPPER = CHARS_LOWER.toUpperCase();
     String HEX_POOL  = NUMBERS + "abcdef";
 
-    private Random random;
+    private MersenneTwister random;
 
     public Chance() {
-        this.random = new Random();
+        this.random = new MersenneTwister();
 
     }
 
     public Chance(String seed) {
-        this.random = new Random(seed.hashCode());
+ 
+        this.random = new MersenneTwister(seed.hashCode());
 
     }
 
-    public Chance(Random random) {
-        this.random = random; 
-    }
+
   
+    /**
+     *  Return the chance options builder
+     *
+
+     *  @return Option - Builder for providing options to various methods
+     */
     public Option options() {
         return new Option();
     }
@@ -52,14 +57,16 @@ public class Chance {
             likelihood < 0 || likelihood > 100,
             "Chance: Likelihood accepts values from 0 to 100."
         );
-
-        return random.nextFloat() * 100 < likelihood;    };
+        
+        return random.nextFloat() * 100 < likelihood;    
+    };
 
     /**
      *  Return a random bool, either true or false
      *  @return either true or false
      */
     public Boolean bool() {
+        
         return bool(chanceOptions().option("likelihood", 50));
     }
 
