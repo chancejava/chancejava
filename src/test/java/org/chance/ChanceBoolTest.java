@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
+import static org.chance.Option.chanceOptions;
 
 public class ChanceBoolTest {
 
@@ -16,7 +17,7 @@ public class ChanceBoolTest {
 
     @Test
     public void boolWithOptionsTrueTest() {
-        Boolean expected = chance.bool(new Options.Builder().likelihood(100).build());
+        Boolean expected = chance.bool(chanceOptions().option("likelihood", 100));
         Boolean actual = true;
        assertEquals(expected, actual); 
     }
@@ -30,7 +31,7 @@ public class ChanceBoolTest {
 
     @Test
     public void boolWithOptionsFalseTest() {
-        Boolean expected = chance.bool(new Options.Builder().likelihood(0).build());
+        Boolean expected = chance.bool(chanceOptions().option("likelihood", 0));
         Boolean actual = false;
        assertEquals(expected, actual); 
     }
@@ -40,5 +41,13 @@ public class ChanceBoolTest {
         Boolean expected = chance.bool(0);
         Boolean actual = false;
        assertEquals(expected, actual); 
+    }
+
+    @Test
+    public void testCharacter() {
+        String expected = "a";
+        String actual = chance.character(chanceOptions().option("pool", "a"));
+        assertEquals(expected, actual); 
+
     }
 }
