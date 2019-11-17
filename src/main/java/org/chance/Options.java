@@ -138,25 +138,13 @@ public class Options {
 
 
     public Options(Options options, Options defaults) {
-
-        if(options.alpha != null) {
-            defaults.alpha = options.alpha;
-        }
-        if(options.alpha != null) {
-            defaults.alpha = options.alpha;
-        }
-        if(options.alpha != null) {
-            defaults.alpha = options.alpha;
-        }
-        if(options.alpha != null) {
-            defaults.alpha = options.alpha;
-        }
-        if(options.alpha != null) {
-            defaults.alpha = options.alpha;
-        }
-        if(options.alpha != null) {
-            defaults.alpha = options.alpha;
-        }
+        this.alpha = options.getAlpha() == null ? defaults.getAlpha() : options.getAlpha();
+        this.casing = options.getCasing() == null ? defaults.getCasing() : options.getCasing();
+        this.likelihood = options.getLikelihood() == null ? defaults.getLikelihood() : options.getLikelihood();
+        this.min = options.getMin() == null ? defaults.getMin() : options.getMin();
+        this.max = options.getMax() == null ? defaults.getMax() : options.getMax();
+        this.numeric = options.getNumeric() == null ? defaults.getNumeric() : options.getNumeric();
+        this.pool = options.getPool() == null ? defaults.getPool() : options.getPool();
     }
 
     public Options(Boolean alpha, String casing, Integer likelihood, Long min, Long max, Boolean numeric,
@@ -168,6 +156,70 @@ public class Options {
         this.max = max;
         this.numeric = numeric;
         this.pool = pool;
+        this.symbols = symbols;
+    }
+
+    public Boolean getAlpha() {
+        return alpha;
+    }
+
+    public void setAlpha(Boolean alpha) {
+        this.alpha = alpha;
+    }
+
+    public String getCasing() {
+        return casing;
+    }
+
+    public void setCasing(String casing) {
+        this.casing = casing;
+    }
+
+    public Integer getLikelihood() {
+        return likelihood;
+    }
+
+    public void setLikelihood(Integer likelihood) {
+        this.likelihood = likelihood;
+    }
+
+    public Long getMin() {
+        return min;
+    }
+
+    public void setMin(Long min) {
+        this.min = min;
+    }
+
+    public Long getMax() {
+        return max;
+    }
+
+    public void setMax(Long max) {
+        this.max = max;
+    }
+
+    public Boolean getNumeric() {
+        return numeric;
+    }
+
+    public void setNumeric(Boolean numeric) {
+        this.numeric = numeric;
+    }
+
+    public Collection<Object> getPool() {
+        return pool;
+    }
+
+    public void setPool(Collection<Object> pool) {
+        this.pool = pool;
+    }
+
+    public Boolean getSymbols() {
+        return symbols;
+    }
+
+    public void setSymbols(Boolean symbols) {
         this.symbols = symbols;
     }
 

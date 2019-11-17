@@ -3,6 +3,9 @@ package org.chance;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.chance.utils.Bool;
+import org.chance.utils.TestRange;
+
 public class Chance {
 
     long MAX_INT = 9007199254740992L;
@@ -40,11 +43,7 @@ public class Chance {
 
         }
     }
-    private void testRange(Boolean test, String errorMessage) throws IllegalArgumentException {
-        if (test) {
-            throw new IllegalArgumentException(errorMessage);
-        }
-    }
+
     // -- Basics --
 
     /**
@@ -56,19 +55,7 @@ public class Chance {
      *  @returns either true or false
      */
     public Boolean bool(Options options) {
-        // Note, we could get some minor perf optimizations by checking range
-        // prior to initializing defaults, but that makes code a bit messier
-        // and the check more complicated as we have to check existence of
-        // the object then existence of the key before checking constraints.
-        // Since the options initialization should be minor computationally,
-        // decision made for code cleanliness intentionally. This is mentioned
-        // here as it's the first occurrence, will not be mentioned again.
-        testRange(
-            options.likelihood() < 0 || options.likelihood() > 100,
-            "Chance: Likelihood accepts values from 0 to 100."
-        );
-
-        return this.random.nextFloat() * 100 < options.likelihood();
+        return Bool.bool(options, random);
     };
 
     /**
@@ -76,7 +63,7 @@ public class Chance {
      *  @return either true or false
      */
     public Boolean bool() {
-        return bool(new Options.Builder().likelihood(50).build(););
+        return bool(new Options.Builder().likelihood(50).build());
     }
 
     /**
@@ -88,15 +75,15 @@ public class Chance {
      *  @return either true or false
      */
     public Boolean bool(Integer likelihood) {
-        return bool(new Options.Builder().likelihood(likelihood).build(););
-
+        return bool(new Options.Builder().likelihood(likelihood).build());
     }
+
     /**
      *  Return a random character.
      *
-     *  @param {Object} [options={}] can specify a character pool or alpha,
+     *  @param options [options={}] can specify a character pool or alpha,
      *    numeric, symbols and casing (lower or upper)
-     *  @returns {String} a single random character
+     *  @return a single random character
      */
     public String character(Options options) {
 
@@ -131,6 +118,13 @@ public class Chance {
         return String.valueOf(pool.charAt(1));
         // return pool.charAt(this.natural({max: (pool.length() - 1)}));
     };
+        /**
+     *  Return a random character.
+     *
+     *  @param options [options={}] can specify a character pool or alpha,
+     *    numeric, symbols and casing (lower or upper)
+     *  @return a single random character
+     */
 
     /**
      *  Return a random integer
@@ -154,7 +148,7 @@ public class Chance {
 
         options = initOptions(options, defaults);
 
-        testRange(
+        TestRange.test(
             options.min() > options.max(), 
             "Chance: Min cannot be greater than Max."
         );
