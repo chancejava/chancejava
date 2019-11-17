@@ -1,6 +1,7 @@
 package org.chance;
 
-import java.util.Map;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 public class Chance {
 
@@ -11,34 +12,31 @@ public class Chance {
     String CHARS_UPPER = CHARS_LOWER.toUpperCase();
     String HEX_POOL  = NUMBERS + "abcdef";
 
-    private RandomGenerator randomGenerator;
-    private String seed; 
+    private Random random;
 
     public Chance() {
+        this.random = new Random();
 
     }
 
     public Chance(String seed) {
-        this.seed = seed;
+        this.random = new Random(seed.hashCode());
 
     }
 
-    public Chance(RandomGenerator randomGenerator) {
-        this.randomGenerator = randomGenerator; 
+    public Chance(Random random) {
+        this.random = random; 
     }
-    
-    private Long random() {
-        return randomGenerator.generate();
-    }
+  
 
     private Options initOptions(Options options, Options defaults) {
 
         if(options == null) {
-            return new Options(defaults);
+            return defaults;
         }
 
         else  {
-            return new Options(options, defaults); 
+            return options;
 
         }
     }
@@ -47,20 +45,17 @@ public class Chance {
             throw new IllegalArgumentException(errorMessage);
         }
     }
-        // -- Basics --
+    // -- Basics --
 
     /**
      *  Return a random bool, either true or false
      *
-     *  @param {Object} [options={ likelihood: 50 }] alter the likelihood of
+     *  @param Options [Options.likelihood = 50] alter the likelihood of
      *    receiving a true or false value back.
-     *  @throws {RangeError} if the likelihood is out of bounds
-     *  @returns {Bool} either true or false
+     *  @throws RangeError if the likelihood is out of bounds
+     *  @returns either true or false
      */
     public Boolean bool(Options options) {
-        Options defaults = new Options.Builder().likelihood(50).build();
-        options = initOptions(options, defaults);
-
         // Note, we could get some minor perf optimizations by checking range
         // prior to initializing defaults, but that makes code a bit messier
         // and the check more complicated as we have to check existence of
@@ -73,6 +68,99 @@ public class Chance {
             "Chance: Likelihood accepts values from 0 to 100."
         );
 
-        return this.random() * 100 < options.likelihood();
+        return this.random.nextFloat() * 100 < options.likelihood();
     };
+
+    /**
+     *  Return a random bool, either true or false
+     *  @return either true or false
+     */
+    public Boolean bool() {
+        return bool(new Options.Builder().likelihood(50).build(););
+    }
+
+    /**
+     *  Return a random bool, either true or false
+     *
+     *  @param likelihood (0-100) alter the likelihood of
+     *    receiving a true or false value back.
+     *  @throws RangeError if the likelihood is out of bounds
+     *  @return either true or false
+     */
+    public Boolean bool(Integer likelihood) {
+        return bool(new Options.Builder().likelihood(likelihood).build(););
+
+    }
+    /**
+     *  Return a random character.
+     *
+     *  @param {Object} [options={}] can specify a character pool or alpha,
+     *    numeric, symbols and casing (lower or upper)
+     *  @returns {String} a single random character
+     */
+    public String character(Options options) {
+
+        String symbols = "!@#$%^&*()[]";
+        String letters;
+        String pool = "";
+            
+        
+        if (options.casing() ==  Options.Casing.LOWER.value()) {
+            letters = CHARS_LOWER;
+        } else if (options.casing() == Options.Casing.UPPER.value()) {
+            letters = CHARS_UPPER;
+        } else {
+            letters = CHARS_LOWER + CHARS_UPPER;
+        }
+
+        if (options.pool() != null) {
+            pool = options.pool().stream().map(p -> p.toString()).collect(Collectors.joining());
+        } else {
+            if (options.alpha() != null) {
+                pool.concat(letters);
+            }
+            if (options.numeric() != null) {
+                pool.concat(NUMBERS);
+            }
+            if (options.symbols() != null) {
+                pool.concat(symbols);
+            }
+        }
+
+        // Options defaults = new Options.Builder().build();
+        return String.valueOf(pool.charAt(1));
+        // return pool.charAt(this.natural({max: (pool.length() - 1)}));
+    };
+
+    /**
+     *  Return a random integer
+     *
+     *  NOTE the max and min are INCLUDED in the range. So:
+     *  chance.integer({min: 1, max: 3});
+     *  would return either 1, 2, or 3.
+     *
+     *  @param {Object} [options={}] can specify a min and/or max
+     *  @returns {Number} a single random integer number
+     *  @throws {RangeError} min cannot be greater than max
+     */
+    public Integer integer(Options options) {
+
+        // 9007199254740992 (2^53) is the max integer number in JavaScript
+        // See: http://vq.io/132sa2j
+        Options defaults = new Options.Builder().with(b -> {
+            b.min = MIN_INT;
+            b.max = MAX_INT;
+        }).build();
+
+        options = initOptions(options, defaults);
+
+        testRange(
+            options.min() > options.max(), 
+            "Chance: Min cannot be greater than Max."
+        );
+
+        
+        return (int)Math.floor(this.random.nextFloat() * (options.max() - options.min() + 1) + options.min());
+    };
+
 }

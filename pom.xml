@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -28,58 +28,14 @@
 
     <properties>
         <version.junit-jupiter>5.5.1</version.junit-jupiter>
-        <maven.compiler.target>6</maven.compiler.target>
-        <maven.compiler.testTarget>10</maven.compiler.testTarget>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.testTarget>1.8</maven.compiler.testTarget>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <parent.base.dir>${project.basedir}</parent.base.dir>
         <version.log4j>2.12.0</version.log4j>
     </properties>
 
-
-
-    <profiles>
-        <!--
-        This profile is needed to be active in IntelliJ
-        as it does not understand that the tests have a different target version
-        -->
-        <profile>
-            <id>IntelliJ</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-                <!-- https://youtrack.jetbrains.com/issue/IDEA-85478 -->
-                <property>
-                    <name>idea.maven.embedder.version</name>
-                </property>
-            </activation>
-            <properties>
-                <maven.compiler.target>${maven.compiler.testTarget}</maven.compiler.target>
-            </properties>
-        </profile>
-        <profile>
-            <id>gpg</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
-                        <executions>
-                            <execution>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
     <build>
         <plugins>
             <plugin>
@@ -178,26 +134,29 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
-        
+
         </plugins>
     </build>
     <dependencies>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>${version.junit-jupiter}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>3.12.2</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.9.9</version>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>3.1.0</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/junit/junit -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
             <scope>test</scope>
         </dependency>
 
