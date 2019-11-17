@@ -23,7 +23,7 @@ public class Option {
         options.putAll(optionMap);
         return this;
     }
-    public Option option(String key, String value) {
+    public Option option(String key, Object value) {
         options.put(key, value);
         return this;
         
@@ -51,6 +51,10 @@ public class Option {
     
     public Object getValue(String key) {
         return options.get(key);
+    }
+
+    public Integer getValueAsInt(String key) {
+        return (Integer)options.get(key);
     }
 
     public Object getOrDefault(String key, Object defaultValue) {

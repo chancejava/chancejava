@@ -1,4 +1,4 @@
-package org.chance;
+package org.chance.exception;
 
 public class UnsupportedException extends UnsupportedOperationException {
 

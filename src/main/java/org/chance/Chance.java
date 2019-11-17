@@ -2,9 +2,11 @@ package org.chance;
 
 
 import org.apache.commons.math3.random.MersenneTwister;
-import org.chance.utils.TestRange;
+import org.chance.utils.TestingUtils;
 
 import static org.chance.Option.chanceOptions;
+
+import java.util.stream.Stream;
 
 public class Chance {
 
@@ -29,11 +31,22 @@ public class Chance {
     }
 
 
-  
+ 
+    // TODO revisit Options class.
     /**
-     *  Return the chance options builder
-     *
-
+     *  Return the chance options builder.
+     * Ex: 
+     * <pre>
+     * {@code 
+     * Options options = chance.options()
+     *   .option("min", 1)
+     *   .option("max", 5);
+     * 
+     * Integer randomInt = chance.integer(options)
+     * }
+     * </pre>
+     * 
+     * @see Option
      *  @return Option - Builder for providing options to various methods
      */
     public Option options() {
@@ -43,54 +56,82 @@ public class Chance {
 
     /**
      *  Return a random bool, either true or false
-     *
-     *  @param Options [Options.likelihood = 50] alter the likelihood of
-     *    receiving a true or false value back.
-     *  @throws RangeError if the likelihood is out of bounds
-     *  @returns either true or false
+     *  Example: 
+     *  <pre> 
+     * {@code 
+     * Boolean randBool = chance.bool(
+     *   chance.options()
+     *         .option("likelihood", 35)
+     * );
+     * }
+     * </pre>
+     * @param options  valid options: 
+     * <pre>
+     * </br>
+     * Likelihood: Integer between 0 and 100
+     * </pre>
+     * @see Option
+     * @throws RangeError if the likelihood is out of bounds
+     * @return either true or false
      */
     public Boolean bool(Option options) {
 
-        Integer likelihood = (Integer)options.getValue("likelihood");
+        try { 
 
-        TestRange.test(
-            likelihood < 0 || likelihood > 100,
-            "Chance: Likelihood accepts values from 0 to 100."
-        );
-        
-        return random.nextFloat() * 100 < likelihood;    
+            Integer likelihood = options.getValueAsInt("likelihood");
+            TestingUtils.test(
+                likelihood < 0 || likelihood > 100,
+                "Chance: Likelihood accepts values from 0 to 100."
+            );
+            
+            return random.nextFloat() * 100 < likelihood; 
+
+        } catch (ClassCastException e) {
+            throw new IllegalArgumentException("Chance: Likelihood must be an integer");
+        }
     };
 
     /**
      *  Return a random bool, either true or false
+     *  Example: 
+     *  <pre> 
+     * {@code 
+     * Boolean randBool = chance.bool()
+     * }
+     * </pre>
      *  @return either true or false
      */
     public Boolean bool() {
-        
-        return bool(chanceOptions().option("likelihood", 50));
+        return bool(this.options().option("likelihood", 50));
     }
-
-    /**
-     *  Return a random bool, either true or false
-     *
-     *  @param likelihood (0-100) alter the likelihood of
-     *    receiving a true or false value back.
-     *  @throws RangeError if the likelihood is out of bounds
-     *  @return either true or false
-     */
-    public Boolean bool(Integer likelihood) {
-        return bool(chanceOptions().option("likelihood", likelihood));
-    }
-
     /**
      *  Return a random character.
-     *
-     *  @param options [options={}] can specify a character pool or alpha,
-     *    numeric, symbols and casing (lower or upper)
+     *  Example: 
+     *  <pre> 
+     * {@code 
+     * Options options = chance.options()
+     *   .options("casing", "lower")
+     *   .option("alpha", true)
+     *   .option("symbols", true);
+     * 
+     * String randomCharacter = chance.character(options)
+     * }
+     * </pre>
+     *  @param options can specify a character pool or alpha,
+     *    numeric, symbols and casing
+     * <pre>
+     * {@code
+     * pool: string;
+     * alpha: true | false;
+     * numeric: true | false;
+     * casing: "lower" | "upper"
+     * }
+     *  
      *  @return a single random character
      */
     public String character(Option options) {
 
+    
         String symbols = "!@#$%^&*()[]";
         String letters;
             
@@ -120,59 +161,73 @@ public class Chance {
         }
         
 
+        
+
         // Options defaults = new Options.Builder().build();
         return String.valueOf(pool.charAt(1));
         // return pool.charAt(this.natural({max: (pool.length() - 1)}));
     };
     /**
      *  Return a random character.
-     *
-     *  @param pool [pool="abcde"] can specify a character pool 
      *  @return a single random character
+     *  
      */
-    public String character(String pool) {
-        return character(chanceOptions().option("pool", pool));
-    }
-
-    /**
-     *  Return a random character.
-     *
-     *  @param alpha [alpha=true] can specify a alpha only characters
-     *  @return a single random character
-     */
-    public String character(Boolean alpha) {
-        return character(chanceOptions().option("alpha", alpha));
+    public String character() {
+        return character(this.options());
     }
     
-    // /**
-    //  *  Return a random integer
-    //  *
-    //  *  NOTE the max and min are INCLUDED in the range. So:
-    //  *  chance.integer({min: 1, max: 3});
-    //  *  would return either 1, 2, or 3.
-    //  *
-    //  *  @param {Object} [options={}] can specify a min and/or max
-    //  *  @returns {Number} a single random integer number
-    //  *  @throws {RangeError} min cannot be greater than max
-    //  */
-    // public Integer integer(Option options) {
+    /**
+     *  Return a random integer
+     *
+     *  NOTE the max and min are INCLUDED in the range. So:
+     * <pre>
+     * {@code  
+     * chance.integer(chance.options()
+     *   .option("min",1)
+     *   .option("max", 3)
+     * );
+     * }
+     * </pre>
+     * 
+     *  would return either 1, 2, or 3.
+     *
+     *  @param options can specify a min and/or max
+     *  @return a single random integer number]
+     *  @throws {RangeError} min cannot be greater than max
+     */
+    public Integer integer(Option options) {
+        Integer min;
+        Integer max;
 
-    //     // 9007199254740992 (2^53) is the max integer number in JavaScript
-    //     // See: http://vq.io/132sa2j
-    //     Option defaults = new Options.Builder().with(b -> {
-    //         b.min = MIN_INT;
-    //         b.max = MAX_INT;
-    //     }).build();
+        try {
+            min = options.getValueAsInt("min");
+        } catch (ClassCastException e) {
+            throw new IllegalArgumentException("Chance: Min must be an integer");
+        }
 
-    //     options = initOptions(options, defaults);
+        try {
+            max = options.getValueAsInt("max");
+        } catch (ClassCastException e) {
+            throw new IllegalArgumentException("Chance: Max must be an integer");
+        }
 
-    //     TestRange.test(
-    //         options.min() > options.max(), 
-    //         "Chance: Min cannot be greater than Max."
-    //     );
+        TestingUtils.test(
+            min > max, 
+            "Chance: Min cannot be greater than Max."
+        );
 
-        
-    //     return (int)Math.floor(this.random.nextFloat() * (options.max() - options.min() + 1) + options.min());
-    // };
+        return (int)Math.floor(this.random.nextFloat() * (max - min + 1) + min);
+
+    
+    };
+    /**
+     *  Return a random integer
+     *  @return a single random integer number
+     *  @throws RangeError min cannot be greater than max
+     */
+    public Integer integer() {
+        return integer(this.options().option("min", MIN_INT).option("max", MAX_INT));
+    }
+
 
 }
