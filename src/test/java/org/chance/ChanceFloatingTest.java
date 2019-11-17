@@ -16,7 +16,7 @@ public class ChanceFloatingTest {
 
     @Test
     public void withOptions() {
-        Integer expected = 1;
+        Double expected = 1.0;
         Double actual = chance.floating(
             chance.options()
             .option("min", 1)
@@ -28,7 +28,7 @@ public class ChanceFloatingTest {
     @Test
     public void invalidMin() {
         try { 
-            chance.integer(
+            chance.floating(
                 chance.options()
                 .option("min", "1")
                 .option("max", 2)
@@ -40,7 +40,7 @@ public class ChanceFloatingTest {
     @Test
     public void invalidMax() {
         try { 
-            chance.integer(
+            chance.floating(
                 chance.options()
                 .option("min", 1L)
                 .option("max", true)

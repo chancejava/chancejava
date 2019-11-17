@@ -6,6 +6,7 @@ import org.chance.utils.TestingUtils;
 
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class Chance {
 
@@ -272,27 +273,13 @@ public class Chance {
             throw new IllegalArgumentException("Chance: Max must be an integer");
         }
 
-        Integer num;
-        Double fixed = Math.pow(10, precision);
-
-        Double allowedMax = MAX_INT / fixed;
-        Double allowedMin = -allowedMax;
-
         TestingUtils.test(
-             min < allowedMin,
-            "Chance: Min specified is out of range with fixed. Min should be, at least, " + min
-        );
-        
-        TestingUtils.test(
-            min != null && precision != null && max > allowedMax,
-            "Chance: Max specified is out of range with fixed. Max should be, at most, " + max
+            min > max, 
+            "Chance: Min cannot be greater than Max."
         );
 
-        Option integerOptions = this.options()
-            .option("min", (int)(min * fixed))
-            .option("max", (int)(max * fixed));
-
-        num = this.integer(integerOptions);
-        return new BigDecimal(num / fixed).setScale(precision).doubleValue();
+        return  new BigDecimal(min + (max - min) * random.nextDouble())
+            .setScale(precision, RoundingMode.FLOOR)
+            .doubleValue();
     }
 }
