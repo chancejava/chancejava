@@ -75,7 +75,7 @@ public class Chance {
      * Likelihood: Integer between 0 and 100
      * </pre>
      * @see Options
-     * @throws RangeError if the likelihood is out of bounds
+     * @throws RangeException if the likelihood is out of bounds
      * @return either true or false
      */
     public Boolean bool(Options options) {
@@ -296,7 +296,7 @@ public class Chance {
      *
      *  @param options can specify a min and/or max
      *  @return a single random integer number]
-     *  @throws {RangeError} min cannot be greater than max
+     *  @throws RangeException min cannot be greater than max
      */
     public Integer integer(Options options) {
         Integer min = options.getOrDefault("min", MIN_INT, Integer.class);
@@ -313,7 +313,7 @@ public class Chance {
     /**
      *  Return a random integer
      *  @return a single random integer number
-     *  @throws RangeError min cannot be greater than max
+     *  @throws RangeException min cannot be greater than max
      */
     public Integer integer() {
         return integer(options().option("min", MIN_INT).option("max", MAX_INT));
@@ -335,7 +335,7 @@ public class Chance {
      *
      *  @param options can specify a min and/or max
      *  @return a single random natural number
-     *  @throws {RangeError} min cannot be greater than max
+     *  @throws RangeException min cannot be greater than max
      */
     public Integer natural(Options options) {
 
@@ -353,10 +353,10 @@ public class Chance {
     }
 
     /**
-     *  Return a random floating point number
+     *  Return a random double number
      * <pre>
      * {@code  
-     * chance.floating(chance.options()
+     * chance.doub(chance.options()
      *   .option("precision", 3)
      *   .option("min", 1)
      *   .option("max", 3)
@@ -364,8 +364,8 @@ public class Chance {
      * }
      * </pre>     
      *  @param options can specify a fixed precision, min, max
-     *  @return a single floating point number
-     *  @throws RangeError 
+     *  @return a single double number
+     *  @throws RangeException 
      *    min cannot be greater than max
      */
     public Double doub(Options options) {
@@ -385,16 +385,16 @@ public class Chance {
     }
 
     /**
-     *  Return a random floating point number
+     *  Return a random double number
      * <pre>
      * {@code  
-     * Double rand = chance.floating();
+     * Double rand = chance.doub();
      * }
      * </pre>     
-     *  @return  a single floating point number
-     *  @throws RangeError min must be greater than max
+     *  @return  a single double number
+     *  @throws RangeException min must be greater than max
      */
-    public Double floating() {
+    public Double doub() {
         return doub(options()
             .option("precision", 15)
             .option("min", MIN_INT)
