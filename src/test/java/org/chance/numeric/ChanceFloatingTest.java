@@ -18,11 +18,11 @@ public class ChanceFloatingTest {
     @Test
     public void withOptions() {
         Double expected = 1.0;
-        Double actual = chance.floating(
+        Double actual = chance.doub(
             chance.options()
             .option("min", 1)
             .option("max", 1)
-            );
+        );
        assertEquals(expected, actual); 
     }
 
@@ -30,7 +30,7 @@ public class ChanceFloatingTest {
     public void invalidMin() {
         String min = "min";
         try { 
-            chance.floating(
+            chance.doub(
                 chance.options()
                 .option(min, "1")
                 .option("max", 2)
@@ -45,7 +45,7 @@ public class ChanceFloatingTest {
     public void invalidMax() {
         String max = "max";
         try { 
-            chance.floating(
+            chance.doub(
                 chance.options()
                 .option("min", 1)
                 .option(max, true)

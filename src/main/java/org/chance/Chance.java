@@ -35,7 +35,6 @@ public class Chance {
 
 
  
-    // TODO revisit Options class.
     /**
      *  Return the chance options builder.
      * Ex: 
@@ -49,11 +48,11 @@ public class Chance {
      * }
      * </pre>
      * 
-     * @see Option
-     *  @return Option - Builder for providing options to various methods
+     * @see Options
+     *  @return Options - Builder for providing options to various methods
      */
-    public Option options() {
-        return new Option();
+    public Options options() {
+        return new Options();
     }
 
 
@@ -75,11 +74,11 @@ public class Chance {
      * </br>
      * Likelihood: Integer between 0 and 100
      * </pre>
-     * @see Option
+     * @see Options
      * @throws RangeError if the likelihood is out of bounds
      * @return either true or false
      */
-    public Boolean bool(Option options) {
+    public Boolean bool(Options options) {
         Integer likelihood = options.getOrDefault("likelihood", 50, Integer.class);
 
         TestingUtils.test(
@@ -102,7 +101,7 @@ public class Chance {
      *  @return either true or false
      */
     public Boolean bool() {
-        return bool(this.options().option("likelihood", 50));
+        return bool(options().option("likelihood", 50));
     }
 
 
@@ -140,7 +139,7 @@ public class Chance {
      *  
      *  @return a single random character
      */
-    public String character(Option options) {
+    public String character(Options options) {
 
     
         String letters;
@@ -193,14 +192,14 @@ public class Chance {
      *  
      */
     public String character() {
-        return character(this.options());
+        return character(options());
     }
     /**
      *  Return a random letter.
      *  Example: 
      *  <pre> 
      * {@code 
-     * Option options = chance.options()
+     * Optiona options = chance.options()
      *   .option("pool", "abcd")
      *   .option("casing", "lower");
      * 
@@ -218,7 +217,7 @@ public class Chance {
      *  
      *  @return a single random letter
      */
-    public String letter(Option options) {
+    public String letter(Options options) {
 
         String pool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUWXYZ";
         String letter = this.character(options().option("pool", pool));
@@ -233,7 +232,7 @@ public class Chance {
     }
 
 
-    public String string(Option option) {
+    public String string(Options option) {
         Integer min = option.getOrDefault("min", 5, Integer.class);
         Integer max = option.getOrDefault("max", 20, Integer.class);
         String defaultPool = CHARS_LOWER + CHARS_UPPER + NUMBERS + SYMBOLS;
@@ -245,7 +244,7 @@ public class Chance {
 
         TestingUtils.test(length < 0, "Chance: Length cannot be less than zero.");
             
-        Option characterOptions = options()
+        Options characterOptions = options()
             .option("min", min)
             .option("max", max)
             .option("pool", pool);
@@ -271,7 +270,7 @@ public class Chance {
      *  There can be more parameters after these. All additional parameters are provided to the given function
      */
     
-     public <T> Collection<T> n(Function<Option,T> fn, Integer n, Option options) {
+     public <T> Collection<T> n(Function<Options,T> fn, Integer n, Options options) {
 
         return Collections
             .nCopies(n, options)
@@ -299,7 +298,7 @@ public class Chance {
      *  @return a single random integer number]
      *  @throws {RangeError} min cannot be greater than max
      */
-    public Integer integer(Option options) {
+    public Integer integer(Options options) {
         Integer min = options.getOrDefault("min", MIN_INT, Integer.class);
         Integer max = options.getOrDefault("max", MAX_INT, Integer.class);
 
@@ -317,7 +316,7 @@ public class Chance {
      *  @throws RangeError min cannot be greater than max
      */
     public Integer integer() {
-        return integer(this.options().option("min", MIN_INT).option("max", MAX_INT));
+        return integer(options().option("min", MIN_INT).option("max", MAX_INT));
     }
 /**
      *  Return a natural integer 0 - 2147483647
@@ -338,7 +337,7 @@ public class Chance {
      *  @return a single random natural number
      *  @throws {RangeError} min cannot be greater than max
      */
-    public Integer natural(Option options) {
+    public Integer natural(Options options) {
 
         // TODO add excludes
         Integer min = options.getOrDefault("min", 0, Integer.class);
@@ -369,7 +368,7 @@ public class Chance {
      *  @throws RangeError 
      *    min cannot be greater than max
      */
-    public Double floating(Option options) {
+    public Double doub(Options options) {
 
         Integer min = options.getOrDefault("min", MIN_INT, Integer.class);
         Integer max = options.getOrDefault("max", MAX_INT, Integer.class);
@@ -396,7 +395,7 @@ public class Chance {
      *  @throws RangeError min must be greater than max
      */
     public Double floating() {
-        return floating(options()
+        return doub(options()
             .option("precision", 15)
             .option("min", MIN_INT)
             .option("max", MAX_INT)
