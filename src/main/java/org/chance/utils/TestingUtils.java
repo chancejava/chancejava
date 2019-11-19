@@ -1,6 +1,5 @@
 package org.chance.utils;
 
-import java.util.function.Consumer;
 
 import org.chance.exception.RangeException;
 

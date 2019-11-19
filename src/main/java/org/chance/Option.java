@@ -53,13 +53,15 @@ public class Option {
         return options.get(key);
     }
 
-    public Integer getValueAsInt(String key) {
-        return (Integer)options.get(key);
-    }
 
-    public Object getOrDefault(String key, Object defaultValue) {
-        return options.getOrDefault(key, defaultValue);
+    public <T> T getOrDefault(String key, Object defaultValue, Class<? extends T> type) {
+        try {
+            return type.cast(options.getOrDefault(key, defaultValue));
+        } catch (ClassCastException e) {
+            throw new IllegalArgumentException("Chance:"+key+" must be " + type.getSimpleName());
+        }
     }   
+
 }
 
 // new Options()

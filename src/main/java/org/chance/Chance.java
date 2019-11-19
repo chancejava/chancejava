@@ -77,20 +77,15 @@ public class Chance {
      * @return either true or false
      */
     public Boolean bool(Option options) {
+        Integer likelihood = options.getOrDefault("likelihood", 50, Integer.class);
 
-        try { 
+        TestingUtils.test(
+            likelihood < 0 || likelihood > 100,
+            "Chance: Likelihood accepts values from 0 to 100."
+        );
+        
+        return random.nextFloat() * 100 < likelihood; 
 
-            Integer likelihood = options.getValueAsInt("likelihood");
-            TestingUtils.test(
-                likelihood < 0 || likelihood > 100,
-                "Chance: Likelihood accepts values from 0 to 100."
-            );
-            
-            return random.nextFloat() * 100 < likelihood; 
-
-        } catch (ClassCastException e) {
-            throw new IllegalArgumentException("Chance: Likelihood must be an integer");
-        }
     };
 
     /**
@@ -148,11 +143,11 @@ public class Chance {
         String symbols = "!@#$%^&*()[]";
         String letters;
             
-        String casing = (String)options.getValue("casing");
-        String pool = (String)options.getOrDefault("pool", "");
-        Boolean isAlpha = (Boolean)options.getOrDefault("alpha", true);
-        Boolean isNumeric = (Boolean)options.getOrDefault("numeric", true);
-        Boolean isSymbols = (Boolean)options.getOrDefault("symbols", true);
+        String casing = options.getOrDefault("casing", "any", String.class);
+        String pool = options.getOrDefault("pool", "", String.class);
+        Boolean isAlpha = options.getOrDefault("alpha", true, Boolean.class);
+        Boolean isNumeric = options.getOrDefault("numeric", true, Boolean.class);
+        Boolean isSymbols = options.getOrDefault("symbols", true, Boolean.class);
 
         if (casing.equals("lower")) {
             letters = CHARS_LOWER;
@@ -250,20 +245,8 @@ public class Chance {
      *  @throws {RangeError} min cannot be greater than max
      */
     public Integer integer(Option options) {
-        Integer min;
-        Integer max;
-
-        try {
-            min = options.getValueAsInt("min");
-        } catch (ClassCastException e) {
-            throw new IllegalArgumentException("Chance: Min must be an integer");
-        }
-
-        try {
-            max = options.getValueAsInt("max");
-        } catch (ClassCastException e) {
-            throw new IllegalArgumentException("Chance: Max must be an integer");
-        }
+        Integer min = options.getOrDefault("min", MIN_INT, Integer.class);
+        Integer max = options.getOrDefault("max", MAX_INT, Integer.class);
 
         TestingUtils.test(
             min > max, 
@@ -302,34 +285,16 @@ public class Chance {
      */
     public Double floating(Option options) {
 
-        Integer min;
-        Integer max;
-        Integer precision;
-
-        try {
-            precision = (Integer)options.getOrDefault("precision", 15);
-        } catch (ClassCastException e) {
-            throw new IllegalArgumentException("Chance: Precision must be an integer");
-        }
-        
-        try {
-            min = (Integer)options.getOrDefault("min", MIN_INT);
-        } catch (ClassCastException e) {
-            throw new IllegalArgumentException("Chance: Min must be an integer");
-        }
-
-        try {
-            max = (Integer)options.getOrDefault("max", MAX_INT);
-        } catch (ClassCastException e) {
-            throw new IllegalArgumentException("Chance: Max must be an integer");
-        }
+        Integer min = options.getOrDefault("min", MIN_INT, Integer.class);
+        Integer max = options.getOrDefault("max", MAX_INT, Integer.class);
+        Integer precision = options.getOrDefault("precision", 15, Integer.class);
 
         TestingUtils.test(
             min > max, 
             "Chance: Min cannot be greater than Max."
         );
 
-        return  new BigDecimal(min + (max - min) * random.nextDouble())
+        return  new BigDecimal(min + (max - min ) * random.nextDouble())
             .setScale(precision, RoundingMode.FLOOR)
             .doubleValue();
     }
