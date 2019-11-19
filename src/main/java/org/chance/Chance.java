@@ -52,6 +52,8 @@ public class Chance {
     public Option options() {
         return new Option();
     }
+
+
     // -- Basics --
 
     /**
@@ -104,6 +106,17 @@ public class Chance {
     public Boolean bool() {
         return bool(this.options().option("likelihood", 50));
     }
+
+
+
+    // 
+    // STRINGS
+    // 
+    /////////////////////////////////////////////
+
+
+
+
     /**
      *  Return a random character.
      *  Example: 
@@ -175,7 +188,48 @@ public class Chance {
     public String character() {
         return character(this.options());
     }
+    /**
+     *  Return a random letter.
+     *  Example: 
+     *  <pre> 
+     * {@code 
+     * Option options = chance.options()
+     *   .option("pool", "abcd")
+     *   .option("casing", "lower");
+     * 
+     *String randomLetter = chance.character(options)
+     * }
+     * </pre>
+     * randomLetter would be one of "a","b","c","d"
+
+     *  @param options can specify a character pool, and casing (lower | upper)
+     * <pre>
+     * {@code
+     * pool: string;
+     *casing: "lower" | "upper"
+     * }
+     *  
+     *  @return a single random letter
+     */
+    public String letter(Option options) {
+
+        String pool = "abcdefghijklmnopqrstuvwxyz";
+        String letter = this.character(options().option("pool", pool));
+        if (options.getValue("casing").equals("upper")) {
+            letter = letter.toUpperCase();
+        }
+        return letter;
+    }
+
+
+
     
+    // 
+    // NUMERIC
+    // 
+    /////////////////////////////////////////////
+
+
     /**
      *  Return a random integer
      *
@@ -220,6 +274,7 @@ public class Chance {
 
     
     };
+
     /**
      *  Return a random integer
      *  @return a single random integer number
@@ -229,10 +284,6 @@ public class Chance {
         return integer(this.options().option("min", MIN_INT).option("max", MAX_INT));
     }
 
-    // Note, fixed means N OR LESS digits after the decimal. This because
-    // It could be 14.9000 but in JavaScript, when this is cast as a number,
-    // the trailing zeroes are dropped. Left to the consumer if trailing zeroes are
-    // needed
     /**
      *  Return a random floating point number
      * <pre>
@@ -245,8 +296,8 @@ public class Chance {
      * }
      * </pre>     
      *  @param options can specify a fixed precision, min, max
-     *  @returns {Number} a single floating point number
-     *  @throws RangeError Can only specify fixed or precision, not both. Also
+     *  @return a single floating point number
+     *  @throws RangeError 
      *    min cannot be greater than max
      */
     public Double floating(Option options) {
@@ -282,4 +333,23 @@ public class Chance {
             .setScale(precision, RoundingMode.FLOOR)
             .doubleValue();
     }
+
+    /**
+     *  Return a random floating point number
+     * <pre>
+     * {@code  
+     * Double rand = chance.floating();
+     * }
+     * </pre>     
+     *  @return  a single floating point number
+     *  @throws RangeError min must be greater than max
+     */
+    public Double floating() {
+        return floating(options()
+            .option("precision", 15)
+            .option("min", MIN_INT)
+            .option("max", MAX_INT)
+        );
+    }
+
 }
