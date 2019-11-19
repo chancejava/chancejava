@@ -38,7 +38,7 @@ public class Chance {
      * Ex: 
      * <pre>
      * {@code 
-     * Options options = chance.this.options()
+     * Options options = chance.options()
      *   .option("min", 1)
      *   .option("max", 5);
      * 
@@ -47,7 +47,7 @@ public class Chance {
      * </pre>
      * 
      * @see Options
-     *  @return Options - Builder for providing options to various methods
+     * @return Options - Builder for providing options to various methods
      */
     public Options options() {
         return new Options();
@@ -61,7 +61,7 @@ public class Chance {
      *  <pre> 
      * {@code 
      * Boolean randBool = chance.bool(
-     *   chance.this.options()
+     *   chance.options()
      *         .option("likelihood", 35)
      * );
      * }
@@ -111,7 +111,7 @@ public class Chance {
      *  Example: 
      *  <pre> 
      * {@code 
-     * Options options = chance.this.options()
+     * Options options = chance.options()
      *   .options("casing", "lower")
      *   .option("alpha", true)
      *   .option("symbols", true);
@@ -193,7 +193,7 @@ public class Chance {
      *  Example: 
      *  <pre> 
      * {@code 
-     * Optiona options = chance.this.options()
+     * Optiona options = chance.options()
      *   .option("pool", "abcd")
      *   .option("casing", "lower");
      * 
@@ -230,7 +230,7 @@ public class Chance {
      *
      *  @param options [options={}] can specify a length or min and max
      *  @returns {String} a string of random length
-     *  @throws {RangeError} length cannot be less than zero
+     *  @throws RangeException length cannot be less than zero
     */
     public String string(Options options) {
         Integer min = options.getOrDefault("min", 5, Integer.class);
@@ -254,6 +254,17 @@ public class Chance {
             .collect(Collectors.joining(""));
     }
 
+    /**
+     *  Return a random string
+     *
+     *  @param options can specify a length or min and max
+     *  @see Options
+     *  @return a string of random length
+    */
+    public String string() {
+        return this.string(this.options());
+    }
+
     
     // 
     // NUMERIC
@@ -264,7 +275,7 @@ public class Chance {
      *  Return a random double number
      * <pre>
      * {@code  
-     * chance.doub(chance.this.options()
+     * chance.doub(chance.options()
      *   .option("precision", 3)
      *   .option("min", 1)
      *   .option("max", 3)
@@ -315,7 +326,7 @@ public class Chance {
      *  NOTE the max and min are INCLUDED in the range. So:
      * <pre>
      * {@code  
-     * chance.integer(chance.this.options()
+     * chance.integer(chance.options()
      *   .option("min",1)
      *   .option("max", 3)
      * );
@@ -355,7 +366,7 @@ public class Chance {
      *  NOTE the max and min are INCLUDED in the range. So:
      * <pre>
      * {@code  
-     * chance.integer(chance.this.options()
+     * chance.integer(chance.options()
      *   .option("min",1)
      *   .option("max", 3)
      * );
@@ -388,7 +399,7 @@ public class Chance {
         return this.natural(this.options().option("min", 0).option("max", MAX_INT));
     }
 
-     /**
+    /**
      *  Gives a collection of n random terms
      *  @param <T> Desired collection type
      *  @param fn fn the function that generates something random
