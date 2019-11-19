@@ -10,8 +10,8 @@ import java.math.RoundingMode;
 
 public class Chance {
 
-    long MAX_INT = 9007199254740992L;
-    long MIN_INT = -MAX_INT;
+    Integer MAX_INT = 2147483647;
+    Integer MIN_INT = -MAX_INT;
     String NUMBERS = "0123456789";
     String CHARS_LOWER = "abcdefghijklmnopqrstuvwxyz";
     String CHARS_UPPER = CHARS_LOWER.toUpperCase();
@@ -172,7 +172,14 @@ public class Chance {
         
 
         // Options defaults = new Options.Builder().build();
-        return String.valueOf(pool.charAt(1));
+        return String.valueOf(
+            pool.charAt(
+                this.integer(
+                    options.option("max", pool.length() - 1)
+                           .option("min", 0)
+                )
+            )
+        );
         // return pool.charAt(this.natural({max: (pool.length() - 1)}));
     };
     /**

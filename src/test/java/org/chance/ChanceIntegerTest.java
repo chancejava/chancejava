@@ -2,7 +2,6 @@ package org.chance;
 
 import static org.junit.Assert.assertEquals;
 
-import org.chance.exception.RangeException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,26 +27,33 @@ public class ChanceIntegerTest {
 
     @Test
     public void invalidMin() {
+        String min = "min";
         try { 
             chance.integer(
                 chance.options()
-                .option("min", "1")
+                .option(min, "1")
                 .option("max", 2)
             );
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "Chance: Min must be an integer");
+            assertEquals(
+                "Chance:"+min+" must be " + Integer.class.getSimpleName(),
+                e.getMessage()
+            );
         }
     }
     @Test
     public void invalidMax() {
+        String max = "max";
         try { 
             chance.integer(
                 chance.options()
-                .option("min", 1L)
-                .option("max", true)
+                .option("min", 1)
+                .option(max, true)
             );
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "Chance: Max must be an integer");
-        }
+            assertEquals(
+                "Chance:"+max+" must be " + Integer.class.getSimpleName(),
+                e.getMessage()
+            );        }
     }
 }
