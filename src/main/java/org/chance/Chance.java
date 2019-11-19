@@ -33,14 +33,12 @@ public class Chance {
 
     }
 
-
- 
     /**
      *  Return the chance options builder.
      * Ex: 
      * <pre>
      * {@code 
-     * Options options = chance.options()
+     * Options options = chance.this.options()
      *   .option("min", 1)
      *   .option("max", 5);
      * 
@@ -55,7 +53,6 @@ public class Chance {
         return new Options();
     }
 
-
     // -- Basics --
 
     /**
@@ -64,7 +61,7 @@ public class Chance {
      *  <pre> 
      * {@code 
      * Boolean randBool = chance.bool(
-     *   chance.options()
+     *   chance.this.options()
      *         .option("likelihood", 35)
      * );
      * }
@@ -99,27 +96,22 @@ public class Chance {
      * }
      * </pre>
      *  @return either true or false
-     */
+    */
     public Boolean bool() {
-        return bool(options().option("likelihood", 50));
+        return bool(this.options().option("likelihood", 50));
     }
-
-
 
     // 
     // STRINGS
     // 
     /////////////////////////////////////////////
 
-
-
-
     /**
      *  Return a random character.
      *  Example: 
      *  <pre> 
      * {@code 
-     * Options options = chance.options()
+     * Options options = chance.this.options()
      *   .options("casing", "lower")
      *   .option("alpha", true)
      *   .option("symbols", true);
@@ -138,7 +130,7 @@ public class Chance {
      * }
      *  
      *  @return a single random character
-     */
+    */
     public String character(Options options) {
 
     
@@ -161,7 +153,7 @@ public class Chance {
 
             return String.valueOf(
                 pool.charAt(
-                    this.natural(options().option("max", pool.length() - 1))
+                    this.natural(this.options().option("max", pool.length() - 1))
                 )
             ); 
 
@@ -179,27 +171,29 @@ public class Chance {
             
             return String.valueOf(
                 pool.charAt(
-                    this.natural(options().option("max", pool.length() - 1))
+                    this.natural(this.options().option("max", pool.length() - 1))
                 )
             );
         }
 
 
     };
+    
     /**
      *  Return a random character.
      *  @return a single random character
      *  
-     */
+    */
     public String character() {
-        return character(options());
+        return character(this.options());
     }
+    
     /**
      *  Return a random letter.
      *  Example: 
      *  <pre> 
      * {@code 
-     * Optiona options = chance.options()
+     * Optiona options = chance.this.options()
      *   .option("pool", "abcd")
      *   .option("casing", "lower");
      * 
@@ -216,11 +210,11 @@ public class Chance {
      * }
      *  
      *  @return a single random letter
-     */
+    */
     public String letter(Options options) {
 
         String pool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUWXYZ";
-        String letter = this.character(options().option("pool", pool));
+        String letter = this.character(this.options().option("pool", pool));
         String casing = options.getOrDefault("casing", "any", String.class);
         if (casing.equals("upper")) {
             letter = letter.toUpperCase();
@@ -230,21 +224,27 @@ public class Chance {
 
         return letter;
     }
-
-
-    public String string(Options option) {
-        Integer min = option.getOrDefault("min", 5, Integer.class);
-        Integer max = option.getOrDefault("max", 20, Integer.class);
+    
+    /**
+     *  Return a random string
+     *
+     *  @param options [options={}] can specify a length or min and max
+     *  @returns {String} a string of random length
+     *  @throws {RangeError} length cannot be less than zero
+    */
+    public String string(Options options) {
+        Integer min = options.getOrDefault("min", 5, Integer.class);
+        Integer max = options.getOrDefault("max", 20, Integer.class);
         String defaultPool = CHARS_LOWER + CHARS_UPPER + NUMBERS + SYMBOLS;
-        String pool = option.getOrDefault("pool", defaultPool, String.class);
+        String pool = options.getOrDefault("pool", defaultPool, String.class);
 
-        Integer defaultLength = this.natural(options().option("min", min).option("max", max));
+        Integer defaultLength = this.natural(this.options().option("min", min).option("max", max));
 
-        Integer length = option.getOrDefault("length", defaultLength, Integer.class);
+        Integer length = options.getOrDefault("length", defaultLength, Integer.class);
 
         TestingUtils.test(length < 0, "Chance: Length cannot be less than zero.");
             
-        Options characterOptions = options()
+        Options characterOptions = this.options()
             .option("min", min)
             .option("max", max)
             .option("pool", pool);
@@ -260,32 +260,62 @@ public class Chance {
     // 
     /////////////////////////////////////////////
 
-     /**
-     *  Gives an array of n random terms
-     *
-     *  @param {Function} fn the function that generates something random
-     *  @param {Number} n number of terms to generate
-     *  @returns {Array} an array of length `n` with items generated by `fn`
-     *
-     *  There can be more parameters after these. All additional parameters are provided to the given function
-     */
-    
-     public <T> Collection<T> n(Function<Options,T> fn, Integer n, Options options) {
+    /**
+     *  Return a random double number
+     * <pre>
+     * {@code  
+     * chance.doub(chance.this.options()
+     *   .option("precision", 3)
+     *   .option("min", 1)
+     *   .option("max", 3)
+     * );
+     * }
+     * </pre>     
+     *  @param options can specify a fixed precision, min, max
+     *  @return a single double number
+     *  @throws RangeException 
+     *    min cannot be greater than max
+    */
+    public Double doub(Options options) {
 
-        return Collections
-            .nCopies(n, options)
-            .stream()
-            .map(fn)
-            .collect(Collectors.toList());
+        Integer min = options.getOrDefault("min", MIN_INT, Integer.class);
+        Integer max = options.getOrDefault("max", MAX_INT, Integer.class);
+        Integer precision = options.getOrDefault("precision", 15, Integer.class);
 
-    };
+        TestingUtils.test(
+            min > max, 
+            "Chance: Min cannot be greater than Max."
+        );
+
+        return new BigDecimal(min + (max - min ) * random.nextDouble())
+            .setScale(precision, RoundingMode.FLOOR)
+            .doubleValue();
+    }
+
+    /**
+     *  Return a random double number
+     * <pre>
+     * {@code  
+     * Double rand = chance.doub();
+     * }
+     * </pre>     
+     *  @return  a single double number
+    */
+    public Double doub() {
+        return doub(this.options()
+            .option("precision", 15)
+            .option("min", MIN_INT)
+            .option("max", MAX_INT)
+        );
+    }
+
     /**
      *  Return a random integer
      *
      *  NOTE the max and min are INCLUDED in the range. So:
      * <pre>
      * {@code  
-     * chance.integer(chance.options()
+     * chance.integer(chance.this.options()
      *   .option("min",1)
      *   .option("max", 3)
      * );
@@ -297,7 +327,7 @@ public class Chance {
      *  @param options can specify a min and/or max
      *  @return a single random integer number]
      *  @throws RangeException min cannot be greater than max
-     */
+    */
     public Integer integer(Options options) {
         Integer min = options.getOrDefault("min", MIN_INT, Integer.class);
         Integer max = options.getOrDefault("max", MAX_INT, Integer.class);
@@ -314,17 +344,18 @@ public class Chance {
      *  Return a random integer
      *  @return a single random integer number
      *  @throws RangeException min cannot be greater than max
-     */
+    */
     public Integer integer() {
-        return integer(options().option("min", MIN_INT).option("max", MAX_INT));
+        return integer(this.options().option("min", MIN_INT).option("max", MAX_INT));
     }
-/**
+
+    /**
      *  Return a natural integer 0 - 2147483647
      *
      *  NOTE the max and min are INCLUDED in the range. So:
      * <pre>
      * {@code  
-     * chance.integer(chance.options()
+     * chance.integer(chance.this.options()
      *   .option("min",1)
      *   .option("max", 3)
      * );
@@ -336,7 +367,7 @@ public class Chance {
      *  @param options can specify a min and/or max
      *  @return a single random natural number
      *  @throws RangeException min cannot be greater than max
-     */
+    */
     public Integer natural(Options options) {
 
         // TODO add excludes
@@ -346,60 +377,33 @@ public class Chance {
         TestingUtils.test(min < 0, "Chance: Min cannot be less than zero.");
 
 
-        return this.integer(options().option("min", min).option("max", max));
+        return this.integer(this.options().option("min", min).option("max", max));
     };
+
+    /**
+     *  Return a natural integer 0 - 2147483647
+     *  @return a single random natural number
+    */
     public Integer natural() {
-        return this.natural(options().option("min", 0).option("max", MAX_INT));
+        return this.natural(this.options().option("min", 0).option("max", MAX_INT));
     }
 
-    /**
-     *  Return a random double number
-     * <pre>
-     * {@code  
-     * chance.doub(chance.options()
-     *   .option("precision", 3)
-     *   .option("min", 1)
-     *   .option("max", 3)
-     * );
-     * }
-     * </pre>     
-     *  @param options can specify a fixed precision, min, max
-     *  @return a single double number
-     *  @throws RangeException 
-     *    min cannot be greater than max
-     */
-    public Double doub(Options options) {
+     /**
+     *  Gives a collection of n random terms
+     *  @param <T> Desired collection type
+     *  @param fn fn the function that generates something random
+     *  @param n n number of terms to generate
+     *  @param options options to be passed to fn
+     *  @return Collection of length `n` with items generated by `fn`
+    */
+    public <T> Collection<T> n(Function<Options,T> fn, Integer n, Options options) {
 
-        Integer min = options.getOrDefault("min", MIN_INT, Integer.class);
-        Integer max = options.getOrDefault("max", MAX_INT, Integer.class);
-        Integer precision = options.getOrDefault("precision", 15, Integer.class);
+        return Collections
+            .nCopies(n, options)
+            .stream()
+            .map(fn)
+            .collect(Collectors.toList());
 
-        TestingUtils.test(
-            min > max, 
-            "Chance: Min cannot be greater than Max."
-        );
-
-        return  new BigDecimal(min + (max - min ) * random.nextDouble())
-            .setScale(precision, RoundingMode.FLOOR)
-            .doubleValue();
-    }
-
-    /**
-     *  Return a random double number
-     * <pre>
-     * {@code  
-     * Double rand = chance.doub();
-     * }
-     * </pre>     
-     *  @return  a single double number
-     *  @throws RangeException min must be greater than max
-     */
-    public Double doub() {
-        return doub(options()
-            .option("precision", 15)
-            .option("min", MIN_INT)
-            .option("max", MAX_INT)
-        );
-    }
-
+    };
+    
 }
