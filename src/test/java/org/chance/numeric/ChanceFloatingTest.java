@@ -1,11 +1,12 @@
-package org.chance;
+package org.chance.numeric;
 
 import static org.junit.Assert.assertEquals;
 
+import org.chance.Chance;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ChanceIntegerTest {
+public class ChanceFloatingTest {
 
     private Chance chance;
 
@@ -16,8 +17,8 @@ public class ChanceIntegerTest {
 
     @Test
     public void withOptions() {
-        Integer expected = 1;
-        Integer actual = chance.integer(
+        Double expected = 1.0;
+        Double actual = chance.floating(
             chance.options()
             .option("min", 1)
             .option("max", 1)
@@ -29,31 +30,31 @@ public class ChanceIntegerTest {
     public void invalidMin() {
         String min = "min";
         try { 
-            chance.integer(
+            chance.floating(
                 chance.options()
                 .option(min, "1")
                 .option("max", 2)
             );
         } catch (IllegalArgumentException e) {
             assertEquals(
-                "Chance:"+min+" must be " + Integer.class.getSimpleName(),
+                "Chance:"+min+" must be "+ Integer.class.getSimpleName(),
                 e.getMessage()
-            );
-        }
+                );        }
     }
     @Test
     public void invalidMax() {
         String max = "max";
         try { 
-            chance.integer(
+            chance.floating(
                 chance.options()
                 .option("min", 1)
                 .option(max, true)
             );
         } catch (IllegalArgumentException e) {
             assertEquals(
-                "Chance:"+max+" must be " + Integer.class.getSimpleName(),
+                "Chance:"+max+" must be "+ Integer.class.getSimpleName(),
                 e.getMessage()
-            );        }
+                );
+        }
     }
 }
