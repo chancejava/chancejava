@@ -675,9 +675,29 @@ public class Chance {
 
     public Date birthday(Options options) {
 
-        return null;
+        Calendar cal = Calendar.getInstance();
+
+        Integer age = this.age(options);
+
+        String type = options.getOrDefault("type", null, String.class);
+        cal.setTime(new Date());
+        Integer currentYear = cal.get(Calendar.YEAR);
+
+        if(type != null) {
+            Calendar min = Calendar.getInstance();
+            Calendar max = Calendar.getInstance();
+            min.setTime(new Date());
+            max.setTime(new Date());
+            min.set(currentYear - age - 1, min.get(Calendar.MONTH), min.get(Calendar.DATE));
+            max.set(currentYear - age, min.get(Calendar.MONTH), min.get(Calendar.DATE));
+            Integer minTime = new BigDecimal(min.getTime().getTime()).intValue();
+            Integer maxTime = new BigDecimal(max.getTime().getTime()).intValue();
+            options = options.option("min", minTime).option("max", maxTime);
+        }
+
+        return this.date(options);
     }
-    
+
     public Date birthday() {
 
         return this.birthday(this.options());
@@ -692,15 +712,14 @@ public class Chance {
 
         Calendar calendar = Calendar.getInstance();
 
-        Date min = options.getOrDefault("min", null, Date.class);
-        Date max = options.getOrDefault("max", null, Date.class);
+        Integer min = options.getOrDefault("min", null, Integer.class);
+        Integer max = options.getOrDefault("max", null, Integer.class);
 
         if(min != null || max != null) {
-
             calendar.setTime(new Date(
                 this.integer(this.options()
-                    .option("min", min.getTime())
-                    .option("max", max.getTime())
+                    .option("min", min)
+                    .option("max", max)
                 )
             ));
 
