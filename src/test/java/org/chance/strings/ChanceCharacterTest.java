@@ -36,6 +36,7 @@ public class ChanceCharacterTest {
     public void testSyllable() {
         String pool = "abcdef";
         String actual = chance.sentence();
+        Integer age = chance.age(chance.options().option("type","teen"));
         Boolean expected = pool.contains(actual);
         assertTrue("actual should be a value in the pool", expected); 
 

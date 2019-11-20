@@ -474,7 +474,7 @@ public class Chance {
         return text;
 
     }
-    
+
    /**
      *  Return a random word.
      *  Example: 
@@ -621,6 +621,70 @@ public class Chance {
     public Integer natural() {
         return this.natural(this.options().option("min", 0).option("max", MAX_INT));
     }
+
+
+    //
+    //
+    // person
+    //
+    //
+
+    // -- Person --
+
+    /**
+     *  Return a random age.  Example:
+     * <pre>
+     * {@code  
+     * Options options = chance.options()
+     *   .option("type", "child");
+     * 
+     * Integer randomAge = chance.age(options);
+     * }
+     * </pre>
+     *
+     *  @param options can specify type (child, teen, adult, senior)
+     *  @return a random age
+    */
+    public Integer age(Options options) {
+        String type = options.getOrDefault("type", "", String.class);
+
+        switch (type) {
+            case "child":
+                return this.natural(this.options().option("min", 0).option("max", 12));
+            case "teen":
+                 return this.natural(this.options().option("min", 13).option("max", 19));
+            case "adult":
+                return this.natural(this.options().option("min", 18).option("max", 65));
+            case "senior":
+                return this.natural(this.options().option("min", 65).option("max", 100));
+            case "all":
+                return this.natural(this.options().option("min", 0).option("max", 100));
+            default:
+                return this.natural(this.options().option("min", 18).option("max", 65));
+        }
+
+    };
+
+    /**
+     *  Return a random age.  Example:
+     * <pre>
+     * {@code  
+     * Integer randomAge = chance.age();
+     * }
+     * </pre>
+     *
+     *  @return a random age
+    */
+    public Integer age() {
+        return this.age(this.options());
+    }
+    
+    // 
+    // 
+    // UTILS
+    // 
+    // 
+
 
     /**
      *  Gives a collection of n random terms
