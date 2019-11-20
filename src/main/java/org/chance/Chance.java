@@ -2,12 +2,17 @@ package org.chance;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.math3.random.MersenneTwister;
+import org.chance.types.Month;
 import org.chance.utils.StringHelpers;
 import org.chance.utils.TestingUtils;
 
@@ -622,13 +627,6 @@ public class Chance {
         return this.natural(this.options().option("min", 0).option("max", MAX_INT));
     }
 
-
-    //
-    //
-    // person
-    //
-    //
-
     // -- Person --
 
     /**
@@ -678,7 +676,186 @@ public class Chance {
     public Integer age() {
         return this.age(this.options());
     }
-    
+
+    // -- Time
+
+    private String ampm() {
+        return this.bool() ? "am" : "pm";
+    };
+
+    public Date date(Options options) {
+        String date_string;
+        Date date;
+        Boolean isAmerican = options.getOrDefault("american", true, Boolean.class);
+        Boolean isString = options.getOrDefault("string", false, Boolean.class);
+
+        Date min = options.getOrDefault("min", null, Date.class);
+        Date max = options.getOrDefault("max", null, Date.class);
+        // If interval is specified we ignore preset
+        if(min != null || max != null) {
+            date = new Date(
+                this.integer(this.options()
+                    .option("min", min.getTime())
+                    .option("max", max.getTime())
+                )
+            );
+        } else {
+            Month m = this.monthRaw();
+            Integer daysInMonth = m.getDays();
+
+            if(options && options.month) {
+                // Mod 12 to allow months outside range of 0-11 (not encouraged, but also not prevented).
+                daysInMonth = this.get('months')[((options.month % 12) + 12) % 12].days;
+            }
+
+            options = initOptions(options, {
+                year: parseInt(this.year(), 10),
+                // Necessary to subtract 1 because Date() 0-indexes month but not day or year
+                // for some reason.
+                month: m.numeric - 1,
+                day: this.natural({min: 1, max: daysInMonth}),
+                hour: this.hour({twentyfour: true}),
+                minute: this.minute(),
+                second: this.second(),
+                millisecond: this.millisecond(),
+                american: true,
+                string: false
+            });
+
+            date = new Date(options.year, options.month, options.day, options.hour, options.minute, options.second, options.millisecond);
+        }
+
+        if (options.american) {
+            // Adding 1 to the month is necessary because Date() 0-indexes
+            // months but not day for some odd reason.
+            date_string = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+        } else {
+            date_string = date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
+        }
+
+        // return options.string ? date_string : date;
+        return null;
+    }
+
+    public Date date() {
+        return this.date(this.options());
+    }
+
+    public Integer hour(Options options) {
+
+        Boolean isTwentyFour = options.getOrDefault("twentyfour", false, Boolean.class);
+
+        Integer min = options.getOrDefault("min", isTwentyFour ? 0 : 1, Integer.class);
+        Integer max = options.getOrDefault("max", isTwentyFour ? 23 : 12, Integer.class);
+
+        TestingUtils.test(min < 0, "Chance: Min cannot be less than 0.");
+        TestingUtils.test(isTwentyFour && max > 23, "Chance: Max cannot be greater than 23 for twentyfour option.");
+        TestingUtils.test(!isTwentyFour && max > 12, "Chance: Max cannot be greater than 12.");
+        TestingUtils.test(min > max, "Chance: Min cannot be greater than Max.");
+
+        return this.natural(this.options().option("min", min).option("max", max));
+    };
+
+    public Integer hour() {
+        return this.hour(this.options());
+    }
+
+    public Integer minute(Options options) {
+
+        Integer min = options.getOrDefault("min", 1, Integer.class);
+        Integer max = options.getOrDefault("max", 59, Integer.class);
+
+        TestingUtils.test(min < 0, "Chance: Min cannot be less than 0.");
+        TestingUtils.test(max > 59, "Chance: Max cannot be greater than 59.");
+        TestingUtils.test(min > max, "Chance: Min cannot be greater than Max.");
+
+        return this.natural(this.options().option("min", min).option("max", max));    
+    }
+
+    public Month monthRaw(Options options) {
+        Integer min = options.getOrDefault("min", 1, Integer.class);
+        Integer max = options.getOrDefault("max", 12, Integer.class);
+
+        TestingUtils.test(min < 1, "Chance: Min cannot be less than 1.");
+        TestingUtils.test(max > 12, "Chance: Max cannot be greater than 12.");
+        TestingUtils.test(min > max, "Chance: Min cannot be greater than Max.");
+
+        return this.pickone(this.months());
+        
+    }
+
+    public Month monthRaw() {
+        return this.monthRaw(this.options());
+    }
+
+    public String month(Options options) {
+        Integer min = options.getOrDefault("min", 1, Integer.class);
+        Integer max = options.getOrDefault("max", 12, Integer.class);
+
+        TestingUtils.test(min < 1, "Chance: Min cannot be less than 1.");
+        TestingUtils.test(max > 12, "Chance: Max cannot be greater than 12.");
+        TestingUtils.test(min > max, "Chance: Min cannot be greater than Max.");
+
+        Month month = this.pickone(this.months());
+
+        return month.getName();
+        
+    }
+
+    public String month() {
+        return this.month(this.options());
+    }
+
+    public Integer millisecond() {
+        return this.natural(this.options().option("max", 999));
+    }
+
+    public Integer second() {
+        return this.natural(this.options().option("max", 59));
+    }
+
+    public Integer timestamp() {
+
+        Integer max = new BigDecimal(new Date().getTime() / 1000)
+            .setScale(10, RoundingMode.FLOOR)
+            .intValue();
+
+        return this.natural(this.options().option("min", 1).option("max", max));
+
+    }
+
+    public String year(Options options) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        Integer currentYear = calendar.get(Calendar.YEAR);
+
+        Integer min = options.getOrDefault("min", currentYear, Integer.class);
+        Integer max = options.getOrDefault("max", currentYear + 100, Integer.class); 
+        
+        return this.natural(this.options().option("min", min).option("max", max)).toString();
+    }
+
+    public String year() {
+        return this.year(this.options());
+    }
+
+
+    // -- Helpers 
+
+
+    public <T> T pickone(Collection<T> coll) {
+
+        TestingUtils.test(
+            coll.isEmpty(), 
+            "Chance: Cannot pickone() from an empty collection"
+        );
+        Integer randInt = this.natural(this.options().option("max", coll.size() - 1));
+        
+        return new ArrayList<>(coll).get(randInt);   
+    }
+
+
     // 
     // 
     // UTILS
@@ -704,4 +881,24 @@ public class Chance {
 
     };
     
+    // -- Data 
+
+    private Collection<Month> months() {
+
+        return Stream.of(
+            new Month("January", "Jan", "01", 31),
+            new Month("February", "Feb", "02", 28),
+            new Month("March", "Mar", "03", 31),
+            new Month("April", "Apr", "04", 30),
+            new Month("May", "May", "05", 31),
+            new Month("June", "Jun", "06", 30),
+            new Month("July", "Jul", "07", 31),
+            new Month("August", "Aug", "08", 31),
+            new Month("September", "Sep", "09", 30),
+            new Month("October", "Oct", "10", 31),
+            new Month("November", "Nov", "11", 30),
+            new Month("December", "Dec", "12", 31)
+        ).collect(Collectors.toList());
+
+    }
 }
