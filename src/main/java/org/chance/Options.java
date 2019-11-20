@@ -20,6 +20,9 @@ public class Options {
         return this;
         
     }
+    public Object get(String key) {
+        return options.get(key);
+    }
 
     public <T> T getOrDefault(String key, Object defaultValue, Class<? extends T> type) {
         try {

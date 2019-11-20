@@ -32,5 +32,13 @@ public class ChanceCharacterTest {
         assertTrue("actual should be a value in the pool", expected); 
 
     }
+    @Test
+    public void testSyllable() {
+        String pool = "abcdef";
+        String actual = chance.sentence();
+        Boolean expected = pool.contains(actual);
+        assertTrue("actual should be a value in the pool", expected); 
+
+    }
 
 }

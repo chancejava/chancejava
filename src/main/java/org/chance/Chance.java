@@ -8,6 +8,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.math3.random.MersenneTwister;
+import org.chance.utils.StringHelpers;
 import org.chance.utils.TestingUtils;
 
 public class Chance {
@@ -226,16 +227,28 @@ public class Chance {
     }
     
     /**
-     *  Return a random string
-     *
-     *  @param options [options={}] can specify a length or min and max
-     *  @returns {String} a string of random length
+     *  Return a random string.
+     *  Example: 
+     *  <pre> 
+     * {@code 
+     * Optiona options = chance.options()
+     *   .option("length", 10)
+     *   .option("pool", "abcdef");
+     * 
+     *String randomString = chance.string(options)
+     * }
+     * </pre>
+     *  @param options can specify a character pool, length, or min, and/or max
+     *  @return a random string
      *  @throws RangeException length cannot be less than zero
     */
     public String string(Options options) {
+
         Integer min = options.getOrDefault("min", 5, Integer.class);
         Integer max = options.getOrDefault("max", 20, Integer.class);
+
         String defaultPool = CHARS_LOWER + CHARS_UPPER + NUMBERS + SYMBOLS;
+
         String pool = options.getOrDefault("pool", defaultPool, String.class);
 
         Integer defaultLength = this.natural(this.options().option("min", min).option("max", max));
@@ -256,15 +269,225 @@ public class Chance {
 
     /**
      *  Return a random string
-     *
-     *  @param options can specify a length or min and max
-     *  @see Options
      *  @return a string of random length
     */
     public String string() {
         return this.string(this.options());
     }
+    
+    /**
+     *  Return a random paragraph.
+     *  Example: 
+     *  <pre> 
+     * {@code 
+     * Optiona options = chance.options()
+     *   .option("sentences", 5);
+     * 
+     *String randomParagraph = chance.paragraph(options)
+     * }
+     * </pre>
+     *  @param options can specify a number of sentences
+     *  @return a random paragraph
+    */
+    public String paragraph(Options options) {
 
+        Integer sentences = options.getOrDefault("sentences", null, Integer.class);
+
+        if(sentences == null) {
+            sentences = this.natural(this.options().option("min", 3).option("max", 7));
+        }
+
+        return this.n(this::sentence, sentences, this.options())
+            .stream()
+            .collect(Collectors.joining(" "));
+    };
+
+    /**
+     *  Return a random paragraph.
+     *  @return a random paragraph
+    */
+    public String paragraph() {
+        
+        return this.paragraph(this.options());
+    }
+
+    /**
+     *  Return a random sentence.
+     *  Example: 
+     *  <pre> 
+     * {@code 
+     * Optiona options = chance.options()
+     *   .option("words", 5);
+     * 
+     *String randomSentence = chance.sentence(options)
+     * }
+     * </pre>
+     *  @param options can specify a number of words
+     *  @return a random sentence
+    */
+    public String sentence(Options options) {
+
+        Integer defaultWordCount = this.natural(this.options().option("min", 12).option("max", 18));
+        Integer wordCount = options.getOrDefault("words", defaultWordCount, Integer.class);
+
+        Collection<String> word_array = this.n(this::word, wordCount, this.options());
+
+        String text = word_array.stream().collect(Collectors.joining(" "));
+
+        text = StringHelpers.capitalize(text);
+
+        return text += ".";
+    }
+
+    /**
+     * Returns a random sentence. 
+     *  Example: 
+     *  <pre> 
+     * {@code 
+     * String randomSentence = chance.sentence()
+     * }
+     * </pre>
+     *  @return a random sentence
+    */
+    public String sentence() {
+
+        return this.sentence(this.options());
+    }
+
+    /**
+     *  Return a random syllable.
+     *  Example: 
+     *  <pre> 
+     * {@code 
+     * Optiona options = chance.options()
+     *   .option("length", 5)
+     *   .option("capitalize", true);
+     * 
+     *String randomSyllable = chance.syllable(options)
+     * }
+     * </pre>
+     *  @param options can specify a length, or choose to capitalize the word
+     *  @return a random syllable
+    */
+    public String syllable(Options options) {
+
+        Integer length = options.getOrDefault("length", null, Integer.class);
+        Boolean capitalize = options.getOrDefault("capitalize", null, Boolean.class);
+        String consonants = "bcdfghjklmnprstvwz"; // consonants except hard to speak ones
+        String vowels = "aeiou"; // vowels
+        String all = consonants + vowels; // all
+        String text = "";
+        String chr = "";
+
+        if(length == null) {
+            length = this.natural(this.options().option("min", 2).option("max", 3));
+        }
+
+        for (int i = 0; i < length; i++) {
+            if (i == 0) {
+                // First character can be anything
+                chr = this.character(this.options().option("pool", all));
+            } else if (consonants.indexOf(chr) == -1) {
+                // Last character was a vowel, now we want a consonant
+                chr = this.character(this.options().option("pool", consonants));
+            } else {
+                // Last character was a consonant, now we want a vowel
+                chr = this.character(this.options().option("pool", vowels));
+            }
+
+            text += chr;
+        }
+
+        if (capitalize != null) {
+            text = StringHelpers.capitalize(text);
+        }
+
+        return text;
+    }
+
+    /**
+     *  Return a random syllable.
+     *  Example: 
+     *  <pre> 
+     * {@code 
+     *String randomSyllable = chance.syllable()
+     * }
+     * </pre>
+     *  @return a random syllable
+    */
+    public String syllable() {
+
+        return this.syllable(this.options());
+    }
+
+   /**
+     *  Return a random word.
+     *  Example: 
+     *  <pre> 
+     * {@code 
+     * Optiona options = chance.options()
+     *   .option("syllables", 5)
+     *   .option("capitalize", true);
+     * 
+     *String randomWord = chance.word(options)
+     * }
+     * </pre>
+     *  @param options can specify number of syllables or length, but not both. or choose to capitalize the word
+     *  @return a random word
+    */
+    public String word(Options options) {
+
+        Integer syllables = options.getOrDefault("syllables", null, Integer.class);
+        Integer length = options.getOrDefault("length", null, Integer.class);
+        Boolean capitalize = options.getOrDefault("capitalize", null, Boolean.class);
+
+        TestingUtils.test(
+            syllables != null && length != null,
+            "Chance: Cannot specify both syllables AND length."
+        );
+
+        if(syllables == null) {
+            syllables = this.natural(this.options().option("min", 1).option("max", 3));
+        }
+
+        String text = "";
+
+        if (length != null) {
+            // Either bound word by length
+            do {
+                text += this.syllable();
+            } while (text.length() < length);
+
+            text = text.substring(0, length);
+            
+        } else {
+            // Or by number of syllables
+            for (int i = 0; i < syllables; i++) {
+                text += this.syllable();
+            }
+        }
+
+        if (capitalize != null) {
+            text = StringHelpers.capitalize(text);
+        }
+
+        return text;
+
+    }
+    
+   /**
+     *  Return a random word.
+     *  Example: 
+     *  <pre> 
+     * {@code 
+     *String randomWord = chance.word()
+     * }
+     * </pre>
+     *  @return a random word
+    */
+    public String word() {
+        return this.word(this.options());
+    }
     
     // 
     // NUMERIC
