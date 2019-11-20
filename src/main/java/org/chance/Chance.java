@@ -3,10 +3,12 @@ package org.chance;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -107,10 +109,7 @@ public class Chance {
         return bool(this.options().option("likelihood", 50));
     }
 
-    // 
-    // STRINGS
-    // 
-    /////////////////////////////////////////////
+    // -- Text
 
     /**
      *  Return a random character.
@@ -494,10 +493,7 @@ public class Chance {
         return this.word(this.options());
     }
     
-    // 
-    // NUMERIC
-    // 
-    /////////////////////////////////////////////
+    // -- Numerics
 
     /**
      *  Return a random double number
@@ -677,68 +673,78 @@ public class Chance {
         return this.age(this.options());
     }
 
+    public Date birthday(Options options) {
+
+        return null;
+    }
+    
+    public Date birthday() {
+
+        return this.birthday(this.options());
+    }
     // -- Time
 
-    private String ampm() {
+    public String ampm() {
         return this.bool() ? "am" : "pm";
     };
 
     public Date date(Options options) {
-        String date_string;
-        Date date;
-        Boolean isAmerican = options.getOrDefault("american", true, Boolean.class);
-        Boolean isString = options.getOrDefault("string", false, Boolean.class);
+
+        Calendar calendar = Calendar.getInstance();
 
         Date min = options.getOrDefault("min", null, Date.class);
         Date max = options.getOrDefault("max", null, Date.class);
-        // If interval is specified we ignore preset
+
         if(min != null || max != null) {
-            date = new Date(
+
+            calendar.setTime(new Date(
                 this.integer(this.options()
                     .option("min", min.getTime())
                     .option("max", max.getTime())
                 )
-            );
+            ));
+
+            return calendar.getTime();
+
         } else {
+
+            Integer month = options.getOrDefault("month", null, Integer.class);
+
             Month m = this.monthRaw();
+
             Integer daysInMonth = m.getDays();
 
-            if(options && options.month) {
-                // Mod 12 to allow months outside range of 0-11 (not encouraged, but also not prevented).
-                daysInMonth = this.get('months')[((options.month % 12) + 12) % 12].days;
-            }
+            if (month != null) {
 
-            options = initOptions(options, {
-                year: parseInt(this.year(), 10),
-                // Necessary to subtract 1 because Date() 0-indexes month but not day or year
-                // for some reason.
-                month: m.numeric - 1,
-                day: this.natural({min: 1, max: daysInMonth}),
-                hour: this.hour({twentyfour: true}),
-                minute: this.minute(),
-                second: this.second(),
-                millisecond: this.millisecond(),
-                american: true,
-                string: false
-            });
+                daysInMonth = this.months()
+                    .stream()
+                    .collect(Collectors.toList())
+                    .get(month)
+                    .getDays();
+            } 
 
-            date = new Date(options.year, options.month, options.day, options.hour, options.minute, options.second, options.millisecond);
+            Integer dateYear = Integer.valueOf(this.year());
+            Integer dateMonth = Integer.valueOf(m.getNumeric());
+            Integer dateDay = this.natural(this.options().option("min", 1).option("max", daysInMonth));
+            Integer dateHour = this.hour(this.options().option("twentyfour", true));
+            Integer dateMinute = this.minute();
+            Integer dateSecond = this.second();
+
+
+            calendar = Calendar.getInstance();
+            calendar.set(dateYear, dateMonth, dateDay, dateHour, dateMinute, dateSecond);
+            
+            return calendar.getTime();
+
         }
-
-        if (options.american) {
-            // Adding 1 to the month is necessary because Date() 0-indexes
-            // months but not day for some odd reason.
-            date_string = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
-        } else {
-            date_string = date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
-        }
-
-        // return options.string ? date_string : date;
-        return null;
     }
 
     public Date date() {
         return this.date(this.options());
+    }
+
+    public Long hammertime() {
+        return this.date().getTime();
     }
 
     public Integer hour(Options options) {
@@ -772,6 +778,11 @@ public class Chance {
         return this.natural(this.options().option("min", min).option("max", max));    
     }
 
+    public Integer minute() {
+
+        return this.minute(this.options());
+    }
+
     public Month monthRaw(Options options) {
         Integer min = options.getOrDefault("min", 1, Integer.class);
         Integer max = options.getOrDefault("max", 12, Integer.class);
@@ -785,6 +796,7 @@ public class Chance {
     }
 
     public Month monthRaw() {
+        
         return this.monthRaw(this.options());
     }
 
@@ -824,6 +836,30 @@ public class Chance {
 
     }
 
+    public TimeZone timezone() {
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(this.date());
+
+        return cal.getTimeZone();
+    }
+
+    public String weekday(Options options) {
+
+        Boolean isWeekdayOnly = options.getOrDefault("weekday_only", false, Boolean.class);
+        Collection<String> days = Arrays.asList("Monday", "Tuesday", "Wednesday", "Thursday", "Friday");
+        
+        if(!isWeekdayOnly) {
+            days.addAll(Arrays.asList("Saturday", "Sunday"));
+        }
+
+        return this.pickone(days);
+    }
+
+    public String weekday() {
+        return this.weekday(this.options());
+    }
+
     public String year(Options options) {
 
         Calendar calendar = Calendar.getInstance();
@@ -840,6 +876,9 @@ public class Chance {
         return this.year(this.options());
     }
 
+    // -- Finance
+    
+    
 
     // -- Helpers 
 
