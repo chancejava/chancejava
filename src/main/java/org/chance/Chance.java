@@ -8,17 +8,18 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
 
 import org.apache.commons.math3.random.MersenneTwister;
 import org.chance.types.Month;
 import org.chance.utils.StringHelpers;
 import org.chance.utils.TestingUtils;
 
-public class Chance {
+public class Chance extends ChanceData {
 
     Integer MAX_INT = 2147483647;
     Integer MIN_INT = -MAX_INT;
@@ -623,6 +624,50 @@ public class Chance {
         return this.natural(this.options().option("min", 0).option("max", MAX_INT));
     }
 
+    /**
+     *  Return a random prime number
+     *
+     *  NOTE the max and min are INCLUDED in the range.
+     *
+     *  @param options can specify a min and/or max
+     *  @return Integer a single random prime number
+     *  @throws RangeError min cannot be greater than max nor negative
+     */
+    public Integer prime(Options options) {
+
+        Integer min = options.getOrDefault("min", 0, Integer.class);
+        Integer max = options.getOrDefault("max", 10000, Integer.class);
+        TestingUtils.test(min < 0, "Chance: Min cannot be less than zero.");
+        TestingUtils.test(min > max, "Chance: Min cannot be greater than Max.");
+
+        List<Integer> primes = this.primes().stream().collect(Collectors.toList());
+        Integer lastPrime = primes.get(primes.size() -1 );
+
+        if (max > lastPrime) {
+            for (int i = lastPrime + 2; i <= max; ++i) {
+                if (this.isPrime(i)) {
+                    primes.add(i);
+                }
+            }
+        }
+
+        Collection<Integer> targetPrimes = primes
+            .stream()
+            .filter(p ->  p >= min && p <= max)
+            .collect(Collectors.toList());
+
+        return this.pickone(targetPrimes);
+    }
+
+    /**
+     *  Return a random prime number
+     *
+     *  @return Integer a single random prime number
+     */
+    public Integer prime() {
+        return this.prime(this.options());
+    }
+    
     // -- Person --
 
     /**
@@ -670,6 +715,7 @@ public class Chance {
      *  @return a random age
     */
     public Integer age() {
+
         return this.age(this.options());
     }
 
@@ -702,6 +748,37 @@ public class Chance {
 
         return this.birthday(this.options());
     }
+
+    public String first(Options options) {
+
+        String gender = options.getOrDefault("gender", this.gender(), String.class);
+        String nationality = options.getOrDefault("nationality", "en", String.class);
+
+        Collection<String> names = this.firstNames().get(gender).get(nationality);
+
+        return this.pickone(names);
+    };
+
+    public String first() {
+
+        return this.first(this.options());
+    }
+    public String gender() {
+
+        return this.pickone(Arrays.asList("Male", "Female"));
+    }
+
+    public String last(Options options) {
+
+        String nationality = options.getOrDefault("nationality", "en", String.class);
+        return this.pickone(this.lastNames().get(nationality));
+    }
+
+    public String last() {
+        
+        return this.last(this.options());
+    }
+
     // -- Time
 
     public String ampm() {
@@ -920,6 +997,24 @@ public class Chance {
     // 
     // 
 
+    private Boolean isPrime(Integer n) {
+        if (n % 1  != 0 || n < 2) {
+            return false;
+        }
+        if (n % 2 == 0) {
+            return n == 2;
+        }
+        if (n % 3 == 0) {
+            return n == 3;
+        }
+        double m = Math.sqrt(Double.valueOf(n));
+        for (int i = 5; i <= m; i += 6) {
+            if (n % i == 0 || n % (i + 2) == 0) {
+                return false;
+            }
+        }
+        return true;
+    };
 
     /**
      *  Gives a collection of n random terms
@@ -941,22 +1036,5 @@ public class Chance {
     
     // -- Data 
 
-    private Collection<Month> months() {
 
-        return Stream.of(
-            new Month("January", "Jan", "01", 31),
-            new Month("February", "Feb", "02", 28),
-            new Month("March", "Mar", "03", 31),
-            new Month("April", "Apr", "04", 30),
-            new Month("May", "May", "05", 31),
-            new Month("June", "Jun", "06", 30),
-            new Month("July", "Jul", "07", 31),
-            new Month("August", "Aug", "08", 31),
-            new Month("September", "Sep", "09", 30),
-            new Month("October", "Oct", "10", 31),
-            new Month("November", "Nov", "11", 30),
-            new Month("December", "Dec", "12", 31)
-        ).collect(Collectors.toList());
-
-    }
 }

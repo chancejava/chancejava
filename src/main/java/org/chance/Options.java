@@ -33,6 +33,3 @@ public class Options {
     }   
 
 }
-
-// new Options()
-// .option("alpha", true)

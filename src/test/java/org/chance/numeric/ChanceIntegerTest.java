@@ -45,6 +45,8 @@ public class ChanceIntegerTest {
     @Test
     public void invalidMax() {
         String max = "max";
+        Integer p = chance.prime();
+        p.toString();
         try { 
             chance.integer(
                 chance.options()
@@ -55,7 +57,8 @@ public class ChanceIntegerTest {
             assertEquals(
                 "Chance:"+max+" must be " + Integer.class.getSimpleName(),
                 e.getMessage()
-            );        }
+            );        
+        }
     }
     
 }
