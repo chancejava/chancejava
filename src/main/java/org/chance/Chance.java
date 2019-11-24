@@ -76,11 +76,7 @@ public class Chance extends ChanceData {
      * );
      * }
      * </pre>
-     * @param options  valid options: 
-     * <pre>
-     * </br>
-     * Likelihood: Integer between 0 and 100
-     * </pre>
+     * @param options  valid options: Likelihood: Integer between 0 and 100
      * @see Options
      * @throws RangeException if the likelihood is out of bounds
      * @return either true or false
@@ -755,6 +751,20 @@ public class Chance extends ChanceData {
         return this.age(this.options());
     }
 
+    /**
+     *  Return a birthday.  Example:
+     * <pre>
+     * {@code  
+     * Options options = chance.options()
+     *   .option("type", "child");
+     * 
+     * Date randomBirthday = chance.birthday(options);
+     * }
+     * </pre>
+     * Date would be a date between now and 18 years ago
+     *  @param options can specify type (child, teen, adult, senior)
+     *  @return a random birthday
+    */
     public Date birthday(Options options) {
 
         Calendar cal = Calendar.getInstance();
@@ -762,7 +772,9 @@ public class Chance extends ChanceData {
         Integer age = this.age(options);
 
         String type = options.getOrDefault("type", null, String.class);
+        
         cal.setTime(new Date());
+        
         Integer currentYear = cal.get(Calendar.YEAR);
 
         if(type != null) {
@@ -799,6 +811,7 @@ public class Chance extends ChanceData {
 
         return this.first(this.options());
     }
+    
     public String gender() {
 
         return this.pickone(Arrays.asList("Male", "Female"));
@@ -1148,7 +1161,4 @@ public class Chance extends ChanceData {
 
     };
     
-    // -- Data 
-
-
 }
