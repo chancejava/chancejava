@@ -586,11 +586,36 @@ public class Chance extends ChanceData {
         return integer(this.options().option("min", MIN_INT).option("max", MAX_INT));
     }
 
+    /**
+     *  Return a random floating number
+     * <pre>
+     * {@code  
+     * chance.floating(chance.options()
+     *   .option("precision", 3)
+     *   .option("min", 1)
+     *   .option("max", 3)
+     * );
+     * }
+     * </pre>     
+     *  @param options can specify a fixed precision, min, max
+     *  @return a single floating number
+     *  @throws RangeException 
+     *    min cannot be greater than max
+    */
     public Float floating(Options options) {
 
         return this.doub(options).floatValue();
     }
 
+    /**
+     *  Return a random floating number
+     * <pre>
+     * {@code  
+     * Float rand = chance.floating();
+     * }
+     * </pre>     
+     *  @return  a single floating number
+    */
     public Float floating() {
 
         return this.floating(this.options());
