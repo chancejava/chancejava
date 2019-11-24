@@ -37,6 +37,102 @@ public abstract class ChanceData {
 
     }
 
+    public Collection<Map<String,String>> namePrefixes(String gender) {
+        
+        gender = gender.toLowerCase();
+
+        Collection<Map<String,String>> prefixes = Arrays.asList(new HashMap<String,String>() {{
+            put("name", "Doctor");
+            put("abbreviation", "Dr.");
+        }});
+
+
+        if (gender == "male" || gender == "all") {
+            prefixes.add(new HashMap<String,String>() {{
+                put("name", "Mister");
+                put("abbreviation", "Mr.");
+            }});
+                
+        }
+
+        if (gender == "female" || gender == "all") {
+
+            prefixes.add(new HashMap<String,String>() {{
+                put("name", "Miss");
+                put("abbreviation", "Miss");
+            }});
+
+            prefixes.add(new HashMap<String,String>() {{
+                put("name", "Misses");
+                put("abbreviation", "Mrs.");
+            }});
+        }
+
+        return prefixes;
+
+    }
+
+    public Collection<Map<String,String>> nameSuffixes() {
+        return Arrays.asList(
+            new HashMap<String,String>() {{ 
+                put("name", "Doctor of Osteopathic Medicine");
+                put("abbreviation", "D.O.");
+            }},
+            new HashMap<String,String>() {{ 
+                put("name", "Doctor of Philosophy");
+                put("abbreviation", "Ph.D.");
+            }},
+            new HashMap<String,String>() {{ 
+                put("name", "Esquire");
+                put("abbreviation", "Esq.");
+            }},
+            new HashMap<String,String>() {{ 
+                put("name", "Junior");
+                put("abbreviation", "Jr.");
+            }},
+            new HashMap<String,String>() {{ 
+                put("name", "Juris Doctor");
+                put("abbreviation", "J.D.");
+            }},
+            new HashMap<String,String>() {{ 
+                put("name", "Master of Arts");
+                put("abbreviation", "M.A.");
+            }},
+            new HashMap<String,String>() {{ 
+                put("name", "Master of Business Administration");
+                put("abbreviation", "M.B.A.");
+            }},
+            new HashMap<String,String>() {{ 
+                put("name", "Master of Science");
+                put("abbreviation", "M.S.");
+            }},
+            new HashMap<String,String>() {{ 
+                put("name", "Medical Doctor");
+                put("abbreviation", "M.D.");
+            }},
+            new HashMap<String,String>() {{ 
+                put("name", "Senior");
+                put("abbreviation", "Sr.");
+            }},
+            new HashMap<String,String>() {{ 
+                put("name", "The Third");
+                put("abbreviation", "III");
+            }},
+            new HashMap<String,String>() {{ 
+                put("name", "The Fourth");
+                put("abbreviation", "IV");
+            }},
+            new HashMap<String,String>() {{ 
+                put("name", "Bachelor of Engineering");
+                put("abbreviation", "B.E");
+            }},
+            new HashMap<String,String>() {{ 
+                put("name", "Bachelor of Technology");
+                put("abbreviation", "B.TECH");
+            }});
+    
+    }
+
     public Map<String, Map<String,Collection<String>>> firstNames() {
 
         // Map<String,Object> 

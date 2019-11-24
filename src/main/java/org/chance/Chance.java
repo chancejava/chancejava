@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -585,6 +586,16 @@ public class Chance extends ChanceData {
         return integer(this.options().option("min", MIN_INT).option("max", MAX_INT));
     }
 
+    public Float floating(Options options) {
+
+        return this.doub(options).floatValue();
+    }
+
+    public Float floating() {
+
+        return this.floating(this.options());
+    }
+
     /**
      *  Return a natural integer 0 - 2147483647
      *
@@ -777,6 +788,84 @@ public class Chance extends ChanceData {
     public String last() {
         
         return this.last(this.options());
+    }
+
+    public String name(Options options) {
+
+        String name;
+        String first = this.first(options);
+        String last = this.last(options);
+
+        Boolean hasMiddle = options.getOrDefault("middle", false, Boolean.class);
+        Boolean hasMiddleInitial = options.getOrDefault("middle_initial", false, Boolean.class);
+        Boolean hasPrefix = options.getOrDefault("prefix", false, Boolean.class);
+        Boolean hasSuffix = options.getOrDefault("suffix", false, Boolean.class);
+
+        if(hasMiddle) {
+            name = first + " " + this.first(options) + " " + last;
+        } else if(hasMiddleInitial) {
+            String middleInitial = this.character(
+                this.options()
+                    .option("alpha", true)
+                    .option("casing", "upper")
+            );
+            name = first + " " + middleInitial + ". " + last;
+        } else { 
+            name = first + " " + last;
+        }
+
+        if(hasPrefix) {
+
+            name = this.prefix(options) + " " + name;
+        }
+
+        if(hasSuffix) {
+
+            name = name + " " + this.suffix(options);
+        }
+
+        return name;
+    }
+
+    public String name() {
+
+        return this.name(this.options());
+    }
+
+    public String prefix(Options options) {
+        String gender = options.getOrDefault("gender", "all", String.class);
+        Boolean isFull = options.getOrDefault("full", false, Boolean.class);
+
+        Map<String,String> prefixMap = this.pickone(this.namePrefixes(gender));
+
+        if(isFull) {
+            return prefixMap.get("name");
+        } else {
+            return prefixMap.get("abbreviation");
+        }
+    };
+    
+    public String prefix() {
+
+        return this.prefix(this.options());
+    }
+
+    public String suffix(Options options) {
+             
+        Boolean isFull = options.getOrDefault("full", false, Boolean.class);
+
+        Map<String,String> suffixMap = this.pickone(this.nameSuffixes());
+
+        if(isFull) {
+            return suffixMap.get("name");
+        } else {
+            return suffixMap.get("abbreviation");
+        }    
+    };
+
+    public String suffix() {
+
+        return this.suffix(this.options());
     }
 
     // -- Time
