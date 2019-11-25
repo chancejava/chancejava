@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.google.gson.Gson;
+
 import org.chance.types.Month;
 
 public abstract class ChanceData {
@@ -168,5 +170,139 @@ public abstract class ChanceData {
         lastNames.put("fr",  Arrays.asList("Martin","Bernard","Thomas","Petit","Robert","Richard","Durand","Dubois","Moreau","Laurent","Simon","Michel","Lefèvre","Leroy","Roux","David","Bertrand","Morel","Fournier","Girard","Bonnet","Dupont","Lambert","Fontaine","Rousseau","Vincent","Müller","Lefèvre","Faure","André","Mercier","Blanc","Guérin","Boyer","Garnier","Chevalier","François","Legrand","Gauthier","Garcia","Perrin","Robin","Clément","Morin","Nicolas","Henry","Roussel","Matthieu","Gautier","Masson","Marchand","Duval","Denis","Dumont","Marie","Lemaire","Noël","Meyer","Dufour","Meunier","Brun","Blanchard","Giraud","Joly","Rivière","Lucas","Brunet","Gaillard","Barbier","Arnaud","Martínez","Gérard","Roche","Renard","Schmitt","Roy","Leroux","Colin","Vidal","Caron","Picard","Roger","Fabre","Aubert","Lemoine","Renaud","Dumas","Lacroix","Olivier","Philippe","Bourgeois","Pierre","Benoît","Rey","Leclerc","Payet","Rolland","Leclercq","Guillaume","Lecomte","López","Jean","Dupuy","Guillot","Hubert","Berger","Carpentier","Sánchez","Dupuis","Moulin","Louis","Deschamps","Huet","Vasseur","Perez","Boucher","Fleury","Royer","Klein","Jacquet","Adam","Paris","Poirier","Marty","Aubry","Guyot","Carré","Charles","Renault","Charpentier","Ménard","Maillard","Baron","Bertin","Bailly","Hervé","Schneider","Fernández","Le GallGall","Collet","Léger","Bouvier","Julien","Prévost","Millet","Perrot","Daniel","Le RouxRoux","Cousin","Germain","Breton","Besson","Langlois","Rémi","Le GoffGoff","Pelletier","Lévêque","Perrier","Leblanc","Barré","Lebrun","Marchal","Weber","Mallet","Hamon","Boulanger","Jacob","Monnier","Michaud","Rodríguez","Guichard","Gillet","Étienne","Grondin","Poulain","Tessier","Chevallier","Collin","Chauvin","Da SilvaSilva","Bouchet","Gay","Lemaître","Bénard","Maréchal","Humbert","Reynaud","Antoine","Hoarau","Perret","Barthélemy","Cordier","Pichon","Lejeune","Gilbert","Lamy","Delaunay","Pasquier","Carlier","LaporteLaporte"));
     
         return lastNames;
+    }
+
+    public Map<String,Collection<Map<String,String>>> streetSuffixes() {
+        Gson gson = new Gson();
+        return gson.fromJson("{" +
+        "    \"us\": [" +
+        "    {\"name\": \"Avenue\", \"abbreviation\": \"Ave\"}," +
+        "    {\"name\": \"Boulevard\", \"abbreviation\": \"Blvd\"}," +
+        "    {\"name\": \"Center\", \"abbreviation\": \"Ctr\"}," +
+        "    {\"name\": \"Circle\", \"abbreviation\": \"Cir\"}," +
+        "    {\"name\": \"Court\", \"abbreviation\": \"Ct\"}," +
+        "    {\"name\": \"Drive\", \"abbreviation\": \"Dr\"}," +
+        "    {\"name\": \"Extension\", \"abbreviation\": \"Ext\"}," +
+        "    {\"name\": \"Glen\", \"abbreviation\": \"Gln\"}," +
+        "    {\"name\": \"Grove\", \"abbreviation\": \"Grv\"}," +
+        "    {\"name\": \"Heights\", \"abbreviation\": \"Hts\"}," +
+        "    {\"name\": \"Highway\", \"abbreviation\": \"Hwy\"}," +
+        "    {\"name\": \"Junction\", \"abbreviation\": \"Jct\"}," +
+        "    {\"name\": \"Key\", \"abbreviation\": \"Key\"}," +
+        "    {\"name\": \"Lane\", \"abbreviation\": \"Ln\"}," +
+        "    {\"name\": \"Loop\", \"abbreviation\": \"Loop\"}," +
+        "    {\"name\": \"Manor\", \"abbreviation\": \"Mnr\"}," +
+        "    {\"name\": \"Mill\", \"abbreviation\": \"Mill\"}," +
+        "    {\"name\": \"Park\", \"abbreviation\": \"Park\"}," +
+        "    {\"name\": \"Parkway\", \"abbreviation\": \"Pkwy\"}," +
+        "    {\"name\": \"Pass\", \"abbreviation\": \"Pass\"}," +
+        "    {\"name\": \"Path\", \"abbreviation\": \"Path\"}," +
+        "    {\"name\": \"Pike\", \"abbreviation\": \"Pike\"}," +
+        "    {\"name\": \"Place\", \"abbreviation\": \"Pl\"}," +
+        "    {\"name\": \"Plaza\", \"abbreviation\": \"Plz\"}," +
+        "    {\"name\": \"Point\", \"abbreviation\": \"Pt\"}," +
+        "    {\"name\": \"Ridge\", \"abbreviation\": \"Rdg\"}," +
+        "    {\"name\": \"River\", \"abbreviation\": \"Riv\"}," +
+        "    {\"name\": \"Road\", \"abbreviation\": \"Rd\"}," +
+        "    {\"name\": \"Square\", \"abbreviation\": \"Sq\"}," +
+        "    {\"name\": \"Street\", \"abbreviation\": \"St\"}," +
+        "    {\"name\": \"Terrace\", \"abbreviation\": \"Ter\"}," +
+        "    {\"name\": \"Trail\", \"abbreviation\": \"Trl\"}," +
+        "    {\"name\": \"Turnpike\", \"abbreviation\": \"Tpke\"}," +
+        "    {\"name\": \"View\", \"abbreviation\": \"Vw\"}," +
+        "    {\"name\": \"Way\", \"abbreviation\": \"Way\"}" +
+        "]," +
+        "\"it\": [" +
+        "    { \"name\": \"Accesso\", \"abbreviation\": \"Acc.\" }," +
+        "    { \"name\": \"Alzaia\", \"abbreviation\": \"Alz.\" }," +
+        "    { \"name\": \"Arco\", \"abbreviation\": \"Arco\" }," +
+        "    { \"name\": \"Archivolto\", \"abbreviation\": \"Acv.\" }," +
+        "    { \"name\": \"Arena\", \"abbreviation\": \"Arena\" }," +
+        "    { \"name\": \"Argine\", \"abbreviation\": \"Argine\" }," +
+        "    { \"name\": \"Bacino\", \"abbreviation\": \"Bacino\" }," +
+        "    { \"name\": \"Banchi\", \"abbreviation\": \"Banchi\" }," +
+        "    { \"name\": \"Banchina\", \"abbreviation\": \"Ban.\" }," +
+        "    { \"name\": \"Bastioni\", \"abbreviation\": \"Bas.\" }," +
+        "    { \"name\": \"Belvedere\", \"abbreviation\": \"Belv.\" }," +
+        "    { \"name\": \"Borgata\", \"abbreviation\": \"B.ta\" }," +
+        "    { \"name\": \"Borgo\", \"abbreviation\": \"B.go\" }," +
+        "    { \"name\": \"Calata\", \"abbreviation\": \"Cal.\" }," +
+        "    { \"name\": \"Calle\", \"abbreviation\": \"Calle\" }," +
+        "    { \"name\": \"Campiello\", \"abbreviation\": \"Cam.\" }," +
+        "    { \"name\": \"Campo\", \"abbreviation\": \"Cam.\" }," +
+        "    { \"name\": \"Canale\", \"abbreviation\": \"Can.\" }," +
+        "    { \"name\": \"Carraia\", \"abbreviation\": \"Carr.\" }," +
+        "    { \"name\": \"Cascina\", \"abbreviation\": \"Cascina\" }," +
+        "    { \"name\": \"Case sparse\", \"abbreviation\": \"c.s.\" }," +
+        "    { \"name\": \"Cavalcavia\", \"abbreviation\": \"Cv.\" }," +
+        "    { \"name\": \"Circonvallazione\", \"abbreviation\": \"Cv.\" }," +
+        "    { \"name\": \"Complanare\", \"abbreviation\": \"C.re\" }," +
+        "    { \"name\": \"Contrada\", \"abbreviation\": \"C.da\" }," +
+        "    { \"name\": \"Corso\", \"abbreviation\": \"C.so\" }," +
+        "    { \"name\": \"Corte\", \"abbreviation\": \"C.te\" }," +
+        "    { \"name\": \"Cortile\", \"abbreviation\": \"C.le\" }," +
+        "    { \"name\": \"Diramazione\", \"abbreviation\": \"Dir.\" }," +
+        "    { \"name\": \"Fondaco\", \"abbreviation\": \"F.co\" }," +
+        "    { \"name\": \"Fondamenta\", \"abbreviation\": \"F.ta\" }," +
+        "    { \"name\": \"Fondo\", \"abbreviation\": \"F.do\" }," +
+        "    { \"name\": \"Frazione\", \"abbreviation\": \"Fr.\" }," +
+        "    { \"name\": \"Isola\", \"abbreviation\": \"Is.\" }," +
+        "    { \"name\": \"Largo\", \"abbreviation\": \"L.go\" }," +
+        "    { \"name\": \"Litoranea\", \"abbreviation\": \"Lit.\" }," +
+        "    { \"name\": \"Lungolago\", \"abbreviation\": \"L.go lago\" }," +
+        "    { \"name\": \"Lungo Po\", \"abbreviation\": \"l.go Po\" }," +
+        "    { \"name\": \"Molo\", \"abbreviation\": \"Molo\" }," +
+        "    { \"name\": \"Mura\", \"abbreviation\": \"Mura\" }," +
+        "    { \"name\": \"Passaggio privato\", \"abbreviation\": \"pass. priv.\" }," +
+        "    { \"name\": \"Passeggiata\", \"abbreviation\": \"Pass.\" }," +
+        "    { \"name\": \"Piazza\", \"abbreviation\": \"P.zza\" }," +
+        "    { \"name\": \"Piazzale\", \"abbreviation\": \"P.le\" }," +
+        "    { \"name\": \"Ponte\", \"abbreviation\": \"P.te\" }," +
+        "    { \"name\": \"Portico\", \"abbreviation\": \"P.co\" }," +
+        "    { \"name\": \"Rampa\", \"abbreviation\": \"Rampa\" }," +
+        "    { \"name\": \"Regione\", \"abbreviation\": \"Reg.\" }," +
+        "    { \"name\": \"Rione\", \"abbreviation\": \"R.ne\" }," +
+        "    { \"name\": \"Rio\", \"abbreviation\": \"Rio\" }," +
+        "    { \"name\": \"Ripa\", \"abbreviation\": \"Ripa\" }," +
+        "    { \"name\": \"Riva\", \"abbreviation\": \"Riva\" }," +
+        "    { \"name\": \"Rondò\", \"abbreviation\": \"Rondò\" }," +
+        "    { \"name\": \"Rotonda\", \"abbreviation\": \"Rot.\" }," +
+        "    { \"name\": \"Sagrato\", \"abbreviation\": \"Sagr.\" }," +
+        "    { \"name\": \"Salita\", \"abbreviation\": \"Sal.\" }," +
+        "    { \"name\": \"Scalinata\", \"abbreviation\": \"Scal.\" }," +
+        "    { \"name\": \"Scalone\", \"abbreviation\": \"Scal.\" }," +
+        "    { \"name\": \"Slargo\", \"abbreviation\": \"Sl.\" }," +
+        "    { \"name\": \"Sottoportico\", \"abbreviation\": \"Sott.\" }," +
+        "    { \"name\": \"Strada\", \"abbreviation\": \"Str.\" }," +
+        "    { \"name\": \"Stradale\", \"abbreviation\": \"Str.le\" }," +
+        "    { \"name\": \"Strettoia\", \"abbreviation\": \"Strett.\" }," +
+        "    { \"name\": \"Traversa\", \"abbreviation\": \"Trav.\" }," +
+        "    { \"name\": \"Via\", \"abbreviation\": \"V.\" }," +
+        "    { \"name\": \"Viale\", \"abbreviation\": \"V.le\" }," +
+        "    { \"name\": \"Vicinale\", \"abbreviation\": \"Vic.le\" }," +
+        "    { \"name\": \"Vicolo\", \"abbreviation\": \"Vic.\" }" +
+        "]," +
+        "\"uk\" : [" +
+        "    {\"name\": \"Avenue\", \"abbreviation\": \"Ave\"}," +
+        "    {\"name\": \"Close\", \"abbreviation\": \"Cl\"}," +
+        "    {\"name\": \"Court\", \"abbreviation\": \"Ct\"}," +
+        "    {\"name\": \"Crescent\", \"abbreviation\": \"Cr\"}," +
+        "    {\"name\": \"Drive\", \"abbreviation\": \"Dr\"}," +
+        "    {\"name\": \"Garden\", \"abbreviation\": \"Gdn\"}," +
+        "    {\"name\": \"Gardens\", \"abbreviation\": \"Gdns\"}," +
+        "    {\"name\": \"Green\", \"abbreviation\": \"Gn\"}," +
+        "    {\"name\": \"Grove\", \"abbreviation\": \"Gr\"}," +
+        "    {\"name\": \"Lane\", \"abbreviation\": \"Ln\"}," +
+        "    {\"name\": \"Mount\", \"abbreviation\": \"Mt\"}," +
+        "    {\"name\": \"Place\", \"abbreviation\": \"Pl\"}," +
+        "    {\"name\": \"Park\", \"abbreviation\": \"Pk\"}," +
+        "    {\"name\": \"Ridge\", \"abbreviation\": \"Rdg\"}," +
+        "    {\"name\": \"Road\", \"abbreviation\": \"Rd\"}," +
+        "    {\"name\": \"Square\", \"abbreviation\": \"Sq\"}," +
+        "    {\"name\": \"Street\", \"abbreviation\": \"St\"}," +
+        "    {\"name\": \"Terrace\", \"abbreviation\": \"Ter\"}," +
+        "    {\"name\": \"Valley\", \"abbreviation\": \"Val\"}" +
+        "]" +
+        "}", Map.class);
     }
 }

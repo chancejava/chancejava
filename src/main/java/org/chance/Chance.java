@@ -74,6 +74,9 @@ public class Chance extends ChanceData {
 
     // -- Basics --
 
+
+
+
     /**
      *  Return a random bool, either true or false
      *  Example: 
@@ -118,6 +121,9 @@ public class Chance extends ChanceData {
 
     // -- Text
 
+
+
+
     /**
      *  Return a random character.
      *  Example: 
@@ -128,7 +134,7 @@ public class Chance extends ChanceData {
      *   .option("alpha", true)
      *   .option("symbols", true);
      * 
-     * String randomCharacter = chance.character(options)
+     * Character randomCharacter = chance.character(options)
      * }
      * </pre>
      *  @param options can specify a character pool or alpha,
@@ -143,15 +149,15 @@ public class Chance extends ChanceData {
      *  
      *  @return a single random character
     */
-    public String character(Options options) {
+    public Character character(Options options) {
 
     
         String letters;
         String casing = options.getOrDefault("casing", "any", String.class);
         String pool = options.getOrDefault("pool", "", String.class);
-        Boolean isAlpha = options.getOrDefault("alpha", true, Boolean.class);
-        Boolean isNumeric = options.getOrDefault("numeric", true, Boolean.class);
-        Boolean isSymbols = options.getOrDefault("symbols", true, Boolean.class);
+        Boolean isAlpha = options.getOrDefault("alpha", false, Boolean.class);
+        Boolean isNumeric = options.getOrDefault("numeric", false, Boolean.class);
+        Boolean isSymbols = options.getOrDefault("symbols", false, Boolean.class);
 
         if (casing.equals("lower")) {
             letters = CHARS_LOWER;
@@ -161,12 +167,11 @@ public class Chance extends ChanceData {
             letters = CHARS_LOWER + CHARS_UPPER;
         }
 
-        if(!pool.equals("")) {
+        if(!pool.isEmpty()) {
 
-            return String.valueOf(
-                pool.charAt(
-                    this.natural(this.options().option("max", pool.length() - 1))
-                )
+            
+            return pool.charAt(
+                this.natural(this.options().option("max", pool.length() - 1))
             ); 
 
         } else {
@@ -179,13 +184,17 @@ public class Chance extends ChanceData {
             }
             if (isSymbols) {
                 pool += SYMBOLS;
+            } 
+
+            if(pool.isEmpty()) {
+                pool = letters + NUMBERS + SYMBOLS;
+
             }
             
-            return String.valueOf(
-                pool.charAt(
-                    this.natural(this.options().option("max", pool.length() - 1))
-                )
+            return pool.charAt(
+                this.natural(this.options().option("max", pool.length() - 1))
             );
+                
         }
 
 
@@ -196,7 +205,7 @@ public class Chance extends ChanceData {
      *  @return a single random character
      *  
     */
-    public String character() {
+    public Character character() {
         return character(this.options());
     }
     
@@ -226,7 +235,7 @@ public class Chance extends ChanceData {
     public String letter(Options options) {
 
         String pool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUWXYZ";
-        String letter = this.character(this.options().option("pool", pool));
+        String letter = this.character(this.options().option("pool", pool)).toString();
         String casing = options.getOrDefault("casing", "any", String.class);
         if (casing.equals("upper")) {
             letter = letter.toUpperCase();
@@ -275,6 +284,7 @@ public class Chance extends ChanceData {
         
         return this.n(this::character, length, characterOptions)
             .stream()
+            .map(c -> c.toString())
             .collect(Collectors.joining(""));
     }
 
@@ -345,7 +355,7 @@ public class Chance extends ChanceData {
 
         String text = word_array.stream().collect(Collectors.joining(" "));
 
-        text = StringHelpers.capitalize(text);
+        text = this.capitalize(text);
 
         return text += ".";
     }
@@ -397,20 +407,20 @@ public class Chance extends ChanceData {
         for (int i = 0; i < length; i++) {
             if (i == 0) {
                 // First character can be anything
-                chr = this.character(this.options().option("pool", all));
+                chr = this.character(this.options().option("pool", all)).toString();
             } else if (consonants.indexOf(chr) == -1) {
                 // Last character was a vowel, now we want a consonant
-                chr = this.character(this.options().option("pool", consonants));
+                chr = this.character(this.options().option("pool", consonants)).toString();
             } else {
                 // Last character was a consonant, now we want a vowel
-                chr = this.character(this.options().option("pool", vowels));
+                chr = this.character(this.options().option("pool", vowels)).toString();
             }
 
             text += chr;
         }
 
         if (capitalize != null) {
-            text = StringHelpers.capitalize(text);
+            text = this.capitalize(text);
         }
 
         return text;
@@ -479,7 +489,7 @@ public class Chance extends ChanceData {
         }
 
         if (capitalize != null) {
-            text = StringHelpers.capitalize(text);
+            text = this.capitalize(text);
         }
 
         return text;
@@ -501,6 +511,9 @@ public class Chance extends ChanceData {
     }
     
     // -- Numerics
+
+
+
 
     /**
      *  Return a random double number
@@ -709,6 +722,82 @@ public class Chance extends ChanceData {
         return this.prime(this.options());
     }
     
+    // -- Location --
+    public String address(Options options) {
+        Options naturalOptions = this.options().option("min", 5).option("max", 2000);
+        return this.natural(naturalOptions) + " " + this.street(options);
+    }
+
+    public String address() {
+
+        return this.address(this.options());
+    } 
+
+    public Double altitude(Options options) {
+        
+        Integer fixed = options.getOrDefault("fixed", 5, Integer.class);
+        Integer min = options.getOrDefault("min", 0, Integer.class);
+        Integer max = options.getOrDefault("max", 8848, Integer.class);
+        
+        return this.doub(
+            this.options()
+            .option("fixed", fixed)
+            .option("min", min)
+            .option("max", max)
+        );
+    
+    }
+
+    public Double altitude() {
+        return this.altitude(this.options());
+    }
+
+    public String street(Options options) {
+
+        Boolean shortSuffix = options.getOrDefault("short_suffix", false, Boolean.class);
+        String country = options.getOrDefault("country", "us", String.class);
+        Integer syllables = options.getOrDefault("syllables", 2, Integer.class);
+
+        String street = "";
+        // options = initOptions(options, { country: 'us', syllables: 2 });
+        // var     street;
+
+        switch (country.toLowerCase()) {
+            case "us":
+                street = this.word(this.options().option("syllables", syllables));
+                street = this.capitalize(street);
+                street += " ";
+                street += shortSuffix ?
+                    this.streetSuffix(options).get("abbreviation") :
+                    this.streetSuffix(options).get("name");
+                break;
+            case "it":
+                street = this.word(this.options().option("syllables", syllables));
+                street = this.capitalize(street);
+                street = (shortSuffix ?
+                    this.streetSuffix(options).get("abbreviation") :
+                    this.streetSuffix(options).get("name")) + " " + street;
+                break;
+        }
+        return street;
+    }
+
+    public String street() {
+        return this.street(this.options());
+    }
+
+    public Map<String,String> streetSuffix(Options options) {
+
+        String country = options.getOrDefault("country", "us", String.class);
+        return this.pickone(this.streetSuffixes().get(country));
+    }
+
+    public Map<String,String> streetSuffix() {
+
+        return this.streetSuffix(this.options());
+    }  
+
+
     // -- Person --
 
     /**
@@ -855,7 +944,7 @@ public class Chance extends ChanceData {
                 this.options()
                     .option("alpha", true)
                     .option("casing", "upper")
-            );
+            ).toString();
             name = first + " " + middleInitial + ". " + last;
         } else { 
             name = first + " " + last;
@@ -1132,7 +1221,9 @@ public class Chance extends ChanceData {
     // UTILS
     // 
     // 
-
+    public String capitalize(String word) {
+        return StringHelpers.capitalize(word);
+    }
     private Boolean isPrime(Integer n) {
         if (n % 1  != 0 || n < 2) {
             return false;
