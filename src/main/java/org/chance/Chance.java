@@ -622,7 +622,18 @@ public class Chance extends ChanceData {
     */
     public Float floating(Options options) {
 
-        return this.doub(options).floatValue();
+        Integer min = options.getOrDefault("min", MIN_INT, Integer.class);
+        Integer max = options.getOrDefault("max", MAX_INT, Integer.class);
+        Integer precision = options.getOrDefault("precision", 15, Integer.class);
+
+        TestingUtils.test(
+            min > max, 
+            "Chance: Min cannot be greater than Max."
+        );
+
+        return new BigDecimal(min + (max - min ) * this.random.get())
+            .setScale(precision, RoundingMode.FLOOR)
+            .floatValue();
     }
 
     /**
