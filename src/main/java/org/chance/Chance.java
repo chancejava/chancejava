@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 
@@ -30,17 +31,25 @@ public class Chance extends ChanceData {
     String HEX_POOL  = NUMBERS + "abcdef";
     String SYMBOLS = "!@#$%^&*()[]";
 
-    private MersenneTwister random;
-
+    private Supplier<Double> random;
+    
     public Chance() {
-        this.random = new MersenneTwister();
+        MersenneTwister mt = new MersenneTwister();
 
+        this.random = () -> mt.nextDouble();
+        
     }
 
     public Chance(String seed) {
- 
-        this.random = new MersenneTwister(seed.hashCode());
 
+        MersenneTwister mt = new MersenneTwister(seed.hashCode());
+        this.random = () -> mt.nextDouble();
+
+    }
+
+    public Chance(Supplier<Double> fn) {
+
+        this.random = fn;
     }
 
     /**
@@ -89,7 +98,7 @@ public class Chance extends ChanceData {
             "Chance: Likelihood accepts values from 0 to 100."
         );
         
-        return random.nextFloat() * 100 < likelihood; 
+        return this.random.get() * 100 < likelihood; 
 
     };
 
@@ -520,7 +529,7 @@ public class Chance extends ChanceData {
             "Chance: Min cannot be greater than Max."
         );
 
-        return new BigDecimal(min + (max - min ) * random.nextDouble())
+        return new BigDecimal(min + (max - min ) * this.random.get())
             .setScale(precision, RoundingMode.FLOOR)
             .doubleValue();
     }
@@ -570,7 +579,7 @@ public class Chance extends ChanceData {
             "Chance: Min cannot be greater than Max."
         );
 
-        return (int)Math.floor(this.random.nextFloat() * (max - min + 1) + min);
+        return (int)Math.floor(this.random.get() * (max - min + 1) + min);
     };
 
     /**
