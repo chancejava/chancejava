@@ -624,7 +624,7 @@ public class Chance extends ChanceData {
 
         Integer min = options.getOrDefault("min", MIN_INT, Integer.class);
         Integer max = options.getOrDefault("max", MAX_INT, Integer.class);
-        Integer precision = options.getOrDefault("precision", 15, Integer.class);
+        Integer precision = options.getOrDefault("precision", 7, Integer.class);
 
         TestingUtils.test(
             min > max, 
