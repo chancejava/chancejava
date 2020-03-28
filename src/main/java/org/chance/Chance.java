@@ -74,9 +74,6 @@ public class Chance extends ChanceData {
 
     // -- Basics --
 
-
-
-
     /**
      *  Return a random bool, either true or false
      *  Example: 
@@ -120,9 +117,6 @@ public class Chance extends ChanceData {
     }
 
     // -- Text
-
-
-
 
     /**
      *  Return a random character.
@@ -511,9 +505,6 @@ public class Chance extends ChanceData {
     }
     
     // -- Numerics
-
-
-
 
     /**
      *  Return a random double number
@@ -1208,10 +1199,6 @@ public class Chance extends ChanceData {
         return this.year(this.options());
     }
 
-    // -- Finance
-    
-    
-
     // -- Helpers 
 
 
@@ -1235,6 +1222,7 @@ public class Chance extends ChanceData {
     public String capitalize(String word) {
         return StringHelpers.capitalize(word);
     }
+    
     private Boolean isPrime(Integer n) {
         if (n % 1  != 0 || n < 2) {
             return false;
