@@ -15,7 +15,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-
 import org.apache.commons.math3.random.MersenneTwister;
 import org.chance.types.Month;
 import org.chance.utils.StringHelpers;
@@ -899,10 +898,12 @@ public class Chance extends ChanceData {
 
     public String first(Options options) {
 
-        String gender = options.getOrDefault("gender", this.gender(), String.class);
-        String nationality = options.getOrDefault("nationality", "en", String.class);
+        String gender = options.getOrDefault("gender", this.gender(), String.class).toLowerCase();
+        String nationality = options.getOrDefault("nationality", "en", String.class).toLowerCase();
 
-        Collection<String> names = this.firstNames().get(gender).get(nationality);
+        Map<String, Map<String, Collection<String>>> firstNames = this.firstNames();
+
+        Collection<String> names = firstNames.get(gender).get(nationality);
 
         return this.pickone(names);
     };
@@ -928,6 +929,8 @@ public class Chance extends ChanceData {
         return this.last(this.options());
     }
 
+    
+    
     public String name(Options options) {
 
         String name;
@@ -936,8 +939,6 @@ public class Chance extends ChanceData {
 
         Boolean hasMiddle = options.getOrDefault("middle", false, Boolean.class);
         Boolean hasMiddleInitial = options.getOrDefault("middle_initial", false, Boolean.class);
-        Boolean hasPrefix = options.getOrDefault("prefix", false, Boolean.class);
-        Boolean hasSuffix = options.getOrDefault("suffix", false, Boolean.class);
 
         if(hasMiddle) {
             name = first + " " + this.first(options) + " " + last;
@@ -952,58 +953,12 @@ public class Chance extends ChanceData {
             name = first + " " + last;
         }
 
-        if(hasPrefix) {
-
-            name = this.prefix(options) + " " + name;
-        }
-
-        if(hasSuffix) {
-
-            name = name + " " + this.suffix(options);
-        }
-
         return name;
     }
 
     public String name() {
 
         return this.name(this.options());
-    }
-
-    public String prefix(Options options) {
-        String gender = options.getOrDefault("gender", "all", String.class);
-        Boolean isFull = options.getOrDefault("full", false, Boolean.class);
-
-        Map<String,String> prefixMap = this.pickone(this.namePrefixes(gender));
-
-        if(isFull) {
-            return prefixMap.get("name");
-        } else {
-            return prefixMap.get("abbreviation");
-        }
-    };
-    
-    public String prefix() {
-
-        return this.prefix(this.options());
-    }
-
-    public String suffix(Options options) {
-             
-        Boolean isFull = options.getOrDefault("full", false, Boolean.class);
-
-        Map<String,String> suffixMap = this.pickone(this.nameSuffixes());
-
-        if(isFull) {
-            return suffixMap.get("name");
-        } else {
-            return suffixMap.get("abbreviation");
-        }    
-    };
-
-    public String suffix() {
-
-        return this.suffix(this.options());
     }
 
     // -- Time

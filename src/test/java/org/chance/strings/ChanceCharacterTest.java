@@ -32,11 +32,12 @@ public class ChanceCharacterTest {
 
         Collections.nCopies(1000, null).forEach(x -> {
             Character character = chance.character(chance.options().option("pool", pool));
-    
+
             assertThat("character is from pool", pool, StringContains.containsString(character.toString()));
         });
 
     }
+
     @Test
     public void allowsAlphaOnly() {
 
@@ -66,7 +67,7 @@ public class ChanceCharacterTest {
             assertTrue("character is alpha only", match);
         });
     }
-    
+
     @Test
     public void obeysLowerCase() {
 
